@@ -17,8 +17,6 @@ const pool = new Pool(
       }
 );
 
-
-
 class Response {
   constructor(data, success = true) {
     this.success = success;
