@@ -1,0 +1,66 @@
+#!/usr/bin/env node
+
+var app = require("../app");
+var debug = require("debug")("kendali_pemanas:server");
+var http = require("http"); //
+var server = http.createServer(app); // Membuat server HTTP dengan aplikasi Express
+
+// Inisialisasi Socket.IO
+const socket = require("../mqtt/socket");
+const io = socket.init(server);
+
+// Inisialisasi MQTT client, lewatkan io agar bisa emit ke frontend
+const client = require("../mqtt/client");
+module.exports = client.connectMQTT(io);
+
+var port = 3000;
+var hostname = "0.0.0.0";
+
+server.listen(port, hostname, function () {
+  // Menjalankan server HTTP pada port dan hostname tertentu dengan callback yang akan dijalankan setelah server berjalan
+  console.log(`Server running at http://${hostname}:${port}/`);
+});
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+function onError(error) {
+  if (error.syscall !== "listen") {
+    throw error;
+  }
+
+  var bind = typeof port === "string" ? "Pipe " + port : "Port " + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case "EACCES":
+      console.error(bind + " requires elevated privileges");
+      process.exit(1);
+      break;
+    case "EADDRINUSE":
+      console.error(bind + " is already in use");
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
+  debug("Listening on " + bind);
+}

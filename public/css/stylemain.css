@@ -1,0 +1,254 @@
+.poetsen-one-regular {
+  font-family: "Poetsen One", sans-serif;
+  font-style: normal;
+}
+
+.merriweather-<uniquifier > {
+  font-family: "Merriweather", serif;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+  font-variation-settings: "wdth" 100;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  font-family: "Poetsen One", sans-serif;
+  font-style: normal;
+}
+
+.container-fluid-grafik {
+  width: 100vw;
+  height: calc(100vh - 53px - 25px);
+  margin: 0;
+  padding: 0;
+  border: none;
+  overflow: hidden;
+}
+
+a {
+  font-style: italic;
+}
+
+footer {
+  width: 100vw;
+  margin: 0;
+  padding: 1px 5px;
+  bottom: 0;
+  left: 0;
+  background-color: rgb(7, 43, 116);
+  font-family: "Merriweather", serif;
+  font-size: 12px;
+}
+
+.wp-block-social-link-anchor:active svg,
+.wp-block-social-link-anchor:focus svg {
+  background-color: rgb(0, 0, 255); /* Biru Bootstrap */
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgb(0, 0, 255);
+  transition: background-color 0.2s, box-shadow 0.2s;
+  color: #ffffff;
+}
+
+.wp-block-social-link-anchor:hover svg {
+  background-color: rgb(255, 255, 255);
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgb(0, 0, 255);
+  transition: background-color 0.2s, box-shadow 0.2s;
+  color: #fff;
+}
+
+.wp-block-social-link-label {
+  color: white;
+  font-style: italic;
+}
+
+.wp-block-social-link-label:hover {
+  color: rgb(0, 0, 255);
+  font-style: italic;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: rgb(7, 43, 116);
+  color: white;
+  position: fixed;
+  height: 100vh;
+  transition: transform 0.6s;
+  transform: translateX(-100%);
+  z-index: 1;
+  font-family: "Merriweather", serif;
+}
+
+.sidebar.open {
+  transform: translateX(0);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 0;
+}
+.overlay.show {
+  display: block;
+}
+
+.navbar {
+  background: rgb(8, 33, 94);
+  border: none;
+  font-family: "Poetsen One", sans-serif;
+}
+
+.top_tittle {
+  position: sticky;
+  text-align: center;
+}
+.text-center {
+  position: sticky;
+  text-align: center;
+}
+
+.btn-hover {
+  border: none;
+  background: none;
+}
+
+.btn-hover:hover {
+  background-color: rgb(0, 0, 255);
+  transition: 0.3s;
+}
+
+.btn-primary {
+  align-item: center;
+  border: none;
+}
+
+canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.input-group {
+  margin-bottom: 1px;
+  margin-top: 1px;
+}
+
+.form-label {
+  display: block;
+}
+
+label.form-label {
+  margin-top: 0;
+  margin-bottom: 0;
+  border: none;
+}
+
+input.form-control {
+  width: 100%;
+  padding: auto;
+}
+
+.custom-alert-green {
+  background-color: #27ae60 !important;
+  color: #fff !important;
+  border-color: #229954 !important;
+  font-family: poppins;
+}
+
+.custom-flex-menu {
+  background-color: none;
+}
+
+.custom-progress {
+  height: 4px;
+  background: linear-gradient(90deg, #2ecc71, #27ae60);
+  transition: width 0.05s linear;
+}
+
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.custom-tooltip-menu {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  left: 50px;
+  bottom: -17px; /* posisi atas tombol, bisa diubah */
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.93);
+  color: #fff;
+  padding: 4px 10px;
+  white-space: nowrap;
+  font-size: 10px;
+  font-family: segoe ui;
+  z-index: 100;
+  pointer-events: none;
+  transition: opacity 0.2s, visibility 0.2s;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+}
+
+.tooltip-wrapper:hover .custom-tooltip-menu,
+.tooltip-wrapper:focus-within .custom-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-wrapper:active .custom-tooltip-menu {
+  visibility: visible;
+  opacity: 1;
+}
+
+.custom-tooltip {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  left: 50px;
+  top: -17px; /* posisi atas tombol, bisa diubah */
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.93);
+  color: #fff;
+  padding: 4px 10px;
+  white-space: nowrap;
+  font-size: 10px;
+  font-family: segoe ui;
+  z-index: 100;
+  pointer-events: none;
+  transition: opacity 0.2s, visibility 0.2s;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+}
+
+.tooltip-wrapper:hover .custom-tooltip,
+.tooltip-wrapper:focus-within .custom-tooltip {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tooltip-wrapper:active .custom-tooltip {
+  visibility: visible;
+  opacity: 0.5;
+}
+
+/* Responsive: tooltip di bawah tombol di mobile */
+@media (max-width: 600px) {
+  .custom-tooltip {
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

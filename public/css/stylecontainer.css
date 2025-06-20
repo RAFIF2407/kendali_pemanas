@@ -1,0 +1,145 @@
+.lora-<uniquifier > {
+  font-family: "Lora", serif;
+  font-optical-sizing: auto;
+  font-weight: <weight>;
+  font-style: normal;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Lora", serif;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+}
+
+.vid_back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(3px); /* Efek blur */
+  background-color: rgba(255, 253, 253, 0.24); /* Warna hitam semi transparan */
+  z-index: 0;
+}
+
+.custom-alert-red {
+  background-color: rgb(255, 0, 0) !important;
+  color: #fff !important;
+  border-color: rgb(255, 0, 0) !important;
+  font-family: poppins;
+}
+
+.custom-progress {
+  height: 4px;
+  background: linear-gradient(90deg, rgb(204, 46, 46), rgb(174, 39, 39));
+  transition: width 0.05s linear;
+}
+
+.foto-logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  z-index: 1;
+  margin-bottom: 7px;
+  border-bottom: 2px solid #ffffff;
+}
+.img-thumbnail {
+  width: 280px;
+  height: auto;
+  background-color: rgba(255, 255, 255, 0);
+  border: none;
+}
+
+.container-md {
+  background-color: rgba(0, 0, 0, 0.66);
+  margin: 40px;
+  border-radius: 5px;
+  box-shadow: 2px 1px 15px 8px rgba(0, 0, 0, 0.4);
+  -webkit-box-shadow: 2px 1px 15px 8px rgba(0, 0, 0, 0.4);
+  -moz-box-shadow: 2px 1px 15px 8px rgba(0, 0, 0, 0.4);
+  position: relative;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 350px;
+}
+
+.container-md h4 {
+  text-align: center;
+  font-weight: normal;
+  text-decoration: underline;
+  color: rgb(255, 255, 255);
+  margin-top: 10px;
+}
+
+.container-md p {
+  text-align: center;
+  color: rgb(255, 255, 255);
+  margin-bottom: 2px;
+  font-weight: bolder;
+}
+
+label {
+  display: block;
+  margin: 2px;
+  font-weight: bold;
+  color: rgb(255, 255, 255);
+}
+
+input,
+select {
+  width: 100%;
+  padding: 8px;
+  border: 1.5px solid rgba(0, 0, 0, 0.8);
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+button {
+  background-color: rgb(39, 216, 45);
+  color: white;
+  padding: 10px 50px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: block;
+  margin: 13px auto;
+  font-weight: bolder;
+}
+
+button:hover {
+  background-color: rgba(4, 111, 9, 0.84);
+}
+
+footer {
+  position: relative;
+  bottom: 0;
+  color: rgb(0, 0, 0);
+  font-family: Gill Sans;
+  text-align: center;
+  font-style: italic;
+  width: 100%;
+  padding: 10px;
+  margin-top: auto;
+  margin-bottom: 0;
+}

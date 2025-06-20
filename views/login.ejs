@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="images/favicon.png" type="image/x-icon" />
+    <title>Sistem Kendali Pemanas</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/stylecontainer.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script>
+      let alertCounter = 0;
+      function showBootstrapAlert(message) {
+        alertCounter++;
+        const alertId = `bootstrap-alert-${alertCounter}`;
+        const alertDiv = document.createElement("div");
+        alertDiv.id = alertId;
+        alertDiv.className =
+          "alert alert-danger alert-dismissible fade show position-fixed top-0 end-0 m-3";
+        alertDiv.role = "alert";
+        alertDiv.style.zIndex = 1055;
+        alertDiv.innerHTML = message;
+        document.body.appendChild(alertDiv);
+      }
+    </script>
+  </head>
+
+  <body>
+    <video class="vid_back" autoplay muted loop playsinline>
+      <source src="images/ek.mp4" type="video/mp4" />
+    </video>
+    <div class="overlay"></div>
+    <div class="container-md">
+      <div class="foto-logo">
+        <img class="img-thumbnail" src="images/polines-white.png" alt="logo" />
+      </div>
+      <p class="text-center fs-4">Enter your ID</p>
+      <form action="/" method="post">
+        <div>
+          <label for="nama">Name</label>
+          <input
+            type="text"
+            id="nama"
+            name="nama"
+            placeholder="Enter your Name"
+            onkeypress="return /[A-Za-z ]/.test(event.key)"
+            required
+          />
+        </div>
+        <div>
+          <label for="nim">NIM</label>
+          <input
+            type="text"
+            id="nim"
+            name="nim"
+            placeholder="Enter your NIM"
+            onkeypress="return /[0-9]/.test(event.key)"
+            maxlength="8"
+            required
+          />
+        </div>
+        <div>
+          <label for="kelas">Class</label>
+          <input
+            type="text"
+            id="kelas"
+            name="kelas"
+            placeholder="Enter your class"
+            maxlength="5"
+            required
+          />
+        </div>
+        <button type="submit">Log in</button>
+      </form>
+    </div>
+    <footer class="text-center fs-6">
+      &copy; 2025: D3-Teknik Elektronika, Politeknik Negeri Semarang
+    </footer>
+    <script src="javascripts/bootstrap.min.js"></script>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+    <div
+      class="alert alert-danger alert-dismissible fade show position-fixed top-0 end-0 m-3"
+      role="alert"
+      style="z-index: 1055"
+    >
+      <%= error %>
+      <button
+        type="button"
+        class="custom-btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      >
+        x
+      </button>
+    </div>
+    <% } %>
+  </body>
+</html>
