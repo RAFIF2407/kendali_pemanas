@@ -67,13 +67,6 @@ function checkAuth(req, res, next) {
   }
 }
 
-//stop handler
-// app.post("/main/stop", checkAuth, (req, res) => {
-//   // Logika menghentikan sistem
-//   console.log("Stop command received");
-//   res.send("Stopped");
-// });
-
 // Route untuk stop tuning
 app.post("/main/pause", async (req, res) => {
   const status = await clientMQTT.publishStop();
