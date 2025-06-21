@@ -542,7 +542,9 @@ function clearChart() {
 }
 
 function exportToCSV() {
-  if (allData.length === 0) return;
+  console.log("Jumlah data:", allData.length);
+  if (allData.length === 0) return; // Tidak ada data untuk diekspor, kembalikan awal fungsi tanpa ekspor CSV atau alert //
+  console.log("❗ allData kosong, CSV tidak dibuat.");
 
   // Kelompokkan data berdasarkan mode yang benar
   const modeGroups = {};
