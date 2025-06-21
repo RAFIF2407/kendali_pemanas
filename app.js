@@ -6,12 +6,15 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 var session = require("express-session");
+var PgSession = require("connect-pg-simple")(session);
 var cors = require("cors");
 var logger = require("morgan");
 const app = express();
 const clientMQTT = require("./mqtt/client.js");
-
 const { pool } = require("./helpers/util");
+
+app.set("trust proxy", 1); // Trust first proxy for secure cookies in production
+
 pool.connect((err) => {
   if (err) {
     console.log("error database", err);
@@ -46,12 +49,18 @@ app.use(cors());
 app.use(allowCrossDomain);
 app.use(
   session({
+    store: new PgSession({
+      pool: pool,
+      tableName: "session",
+    }),
     secret: process.env.SECRETKEY,
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: process.env.NODE_ENV === "production", // Cookie hanya dikirim di HTTPS
+      // secure: false, // Nonaktifkan secure cookie untuk pengembangan lokal  
+      secure: process.env.NODE_ENV === "production", // Cookie hanya dikirim di HTTPS jika dalam produksi
       sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000, // 1 hari
     },
   })
 );
@@ -63,6 +72,7 @@ app.use("/info", datagetRouter);
 // Middleware untuk memeriksa apakah user sudah login
 function checkAuth(req, res, next) {
   if (req.session.user) {
+    console.log("Login success. Session is:", req.session);
     // Jika user sudah login, lanjutkan ke rute /main
     next();
   } else {

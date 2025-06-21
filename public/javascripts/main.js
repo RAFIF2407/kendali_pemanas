@@ -1,5 +1,5 @@
 //koneksi ke server socket.io//
-var socket = io("http://localhost:300", {
+var socket = io("http://localhost:3000", {
   query: { nim: String(window.myNim).trim() },
 });
 
