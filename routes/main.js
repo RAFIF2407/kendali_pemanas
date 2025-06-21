@@ -12,6 +12,7 @@ module.exports = function (db) {
 
   //routes ke halaman utama//
   router.get("/", requireLogin, function (req, res, next) {
+    console.log("Session data:", req.session);
     res.set("Cache-Control", "no-store");
     return res.render("main", { user: req.session.user });
   });

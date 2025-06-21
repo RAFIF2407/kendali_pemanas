@@ -49,6 +49,10 @@ app.use(
     secret: process.env.SECRETKEY,
     resave: false,
     saveUninitialized: true,
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // Cookie hanya dikirim di HTTPS
+      sameSite: "lax",
+    },
   })
 );
 
