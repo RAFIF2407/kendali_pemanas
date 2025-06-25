@@ -58,7 +58,7 @@ app.use(
     saveUninitialized: true,
     cookie: {
       secure: false, // Nonaktifkan secure cookie untuk pengembangan lokal  
-      // secure: process.env.NODE_ENV === "production", // Cookie hanya dikirim di HTTPS jika dalam produksi
+      secure: process.env.NODE_ENV === "production", // Cookie hanya dikirim di HTTPS jika dalam produksi
       sameSite: "lax",
       maxAge: 24 * 60 * 60 * 1000, // 1 hari
     },
