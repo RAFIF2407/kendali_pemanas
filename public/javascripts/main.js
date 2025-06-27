@@ -1,5 +1,5 @@
 //koneksi ke server socket.io//
-var socket = io("https://kendalipemanas-production.up.railway.app/", {
+var socket = io("localhost:3000", {
   query: { nim: String(window.myNim).trim() },
 });
 
@@ -94,6 +94,15 @@ socket.on("disconnect", () => {
   sudahKonek = false;
   updateStatus();
   console.log("Terputus dari server Socket.IO");
+});
+
+socket.on("mqtt-temperature", function (data) {
+  let suhu = parseFloat(data.suhu);
+  if (!isNaN(suhu)) {
+    suhu = suhu.toFixed(1);
+    const tempElem = document.getElementById("realtime-temperature");
+    if (tempElem) tempElem.textContent = suhu + " °C";
+  }
 });
 
 //deklarasi variabel dan tombol//

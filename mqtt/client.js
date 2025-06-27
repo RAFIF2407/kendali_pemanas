@@ -41,13 +41,29 @@ async function connectMQTT(io) {
     mqttClient = await mqtt.connectAsync(brokerUrl, options);
     console.log("Connected to MQTT broker");
 
+    await mqttClient.subscribe("suhu");
     await mqttClient.subscribe("feedback");
     console.log("Subscribed to topic");
 
     mqttClient.on("message", async (topic, message, packet) => {
-      if (packet.retain) {
+      if (packet && packet.retain) {
         console.log("Ignored retained message:", message.toString());
         return;
+      }
+
+      if (topic === "suhu") {
+        let suhuFloat = null;
+        try {
+          const parsed = JSON.parse(message.toString());
+          if (parsed && typeof parsed.suhu !== "undefined") {
+            suhuFloat = parseFloat(parsed.suhu);
+          }
+        } catch (err) {
+          console.error("Failed to parse suhu JSON:", err.message);
+          return;
+        }
+        if (io && suhuFloat !== null)
+          io.emit("mqtt-temperature", { suhu: suhuFloat });
       }
 
       if (topic === "feedback") {
@@ -141,7 +157,7 @@ async function backupAndClearOutputCurrent(nim, idTuningLama) {
   try {
     await pool.query(`DELETE FROM outputold WHERE nim = $1`, [nim]);
 
-    await pool.query( 
+    await pool.query(
       `INSERT INTO outputold (suhu, nim, time, id_tuning, set_point, set_point_atas, set_point_bawah, kp, ki, kd, mode)
       SELECT suhu, nim, time, $2, set_point, set_point_atas, set_point_bawah, kp, ki, kd, mode FROM outputcurrent WHERE nim = $1`,
       [nim, idTuningLama]
@@ -163,14 +179,27 @@ async function insertOutputWithSetpoint(nim, suhu, time, idTuningBaru) {
   );
   if (rows.length === 0) throw new Error("Data variabel tidak ditemukan");
 
-  const { set_point, set_point_atas, set_point_bawah, kp, ki, kd, mode } = rows[0];
+  const { set_point, set_point_atas, set_point_bawah, kp, ki, kd, mode } =
+    rows[0];
 
   // 2. Insert ke outputcurrent
   await pool.query(
     `INSERT INTO outputcurrent
       (suhu, nim, time, id_tuning, set_point, set_point_atas, set_point_bawah, kp, ki, kd, mode)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
-    [suhu, nim, time, idTuningBaru, set_point, set_point_atas, set_point_bawah, kp, ki, kd, mode]
+    [
+      suhu,
+      nim,
+      time,
+      idTuningBaru,
+      set_point,
+      set_point_atas,
+      set_point_bawah,
+      kp,
+      ki,
+      kd,
+      mode,
+    ]
   );
 }
 
