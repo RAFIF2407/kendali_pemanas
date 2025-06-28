@@ -118,22 +118,23 @@
           <span class="bg-primary text-white px-2 py-1 rounded-start" style="font-size:0.95rem; height:32px; display:flex; align-items:center;">
             Suhu
           </span>
-          <span id="realtime-temperature" class="fw-bold text-danger px-2 py-1 rounded-end border border-primary border-start-0" style="font-size:1.1rem; background:white; height:32px; display:flex; align-items:center;">
+          <span id="realtime-temperature" class="fw-normal text-danger px-2 py-2 rounded-end border border-primary border-start-0" style="font-size:1.1rem; background:white; height:32px; display:flex; align-items:center;">
             --°C
           </span>
         </div>
 
 <!-- Untuk mobile: tampilkan suhu di atas tombol user/logout -->
-<div class="d-flex d-md-none align-items-center justify-content-end mb-2" style="height:40px;">
+<div class="d-flex flex-column flex-md-row align-items-end align-items-md-center gap-1 gap-md-3 me-3">
+<div class="d-flex d-md-none align-items-center order-2 order-md-1" style="height:40px;">
   <span class="bg-primary text-white px-2 py-1 rounded-start" style="font-size:0.95rem; height:32px; display:flex; align-items:center;">
     Suhu
   </span>
-  <span id="realtime-temperature-mobile" class="fw-bold text-danger px-2 py-1 rounded-end border border-primary border-start-0" style="font-size:1.1rem; background:white; height:32px; display:flex; align-items:center;">
+  <span id="realtime-temperature-mobile" class="fw-normal text-danger px-2 py-1 rounded-end border border-primary border-start-0" style="font-size:1.1rem; background:white; height:32px; display:flex; align-items:center;">
     --°C
   </span>
 </div>
 
-        <div class="ms-0 dropdown">
+        <div class="dropdown order-1 order-md-2">
           <button
             class="btn-hover rounded dropdown-toggle"
             type="button"
@@ -166,6 +167,7 @@
               </form>
             </a>
           </div>
+        </div>
         </div>
       </div>
     </nav>
