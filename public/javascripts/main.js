@@ -625,7 +625,7 @@ setInterval(() => {
 }, 60000); // setiap 60 detik
 
 let idleTimeout = null;
-const AUTO_LOGOUT_TIME = 5 * 60 * 1000; // 5 menit
+const AUTO_LOGOUT_TIME = 10 * 60 * 1000; // 5 menit
 
 function resetIdleTimer() {
   if (idleTimeout) clearTimeout(idleTimeout);
