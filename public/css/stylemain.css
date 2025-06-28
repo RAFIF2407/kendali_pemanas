@@ -62,7 +62,7 @@ footer {
 .wp-block-social-link-anchor:hover svg {
   background-color: rgb(255, 255, 255);
   border-radius: 50%;
-  box-shadow: 0 0 8px rgb(0, 0, 255);
+  box-shadow: 0 0 8px #0D6EFD;
   transition: background-color 0.2s, box-shadow 0.2s;
   color: #fff;
 }
@@ -73,7 +73,7 @@ footer {
 }
 
 .wp-block-social-link-label:hover {
-  color: rgb(0, 0, 255);
+  color: #0D6EFD;
   font-style: italic;
 }
 
@@ -128,7 +128,7 @@ footer {
 }
 
 .btn-hover:hover {
-  background-color: rgb(0, 0, 255);
+  background-color: #0D6EFD;
   transition: 0.3s;
 }
 
