@@ -305,3 +305,40 @@ footer .text-truncate {
     gap: 0.3rem !important;
   }
 }
+
+@media (max-width: 600px) {
+  /* Menu (kiri) */
+  .navbar .tooltip-wrapper {
+    max-width: 48px;
+    flex: 0 0 48px;
+  }
+
+  /* Judul (tengah) */
+  .navbar .mx-auto,
+  .navbar .top_tittle {
+    max-width: 100vw;
+    width: 100%;
+    font-size: 1rem !important;
+    word-break: break-word;
+    text-align: center;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* Bagian kanan (user/logout & suhu) */
+  .navbar .d-flex.flex-column.flex-md-row.align-items-end.align-items-md-center {
+    width: 100%;
+    max-width: 100vw;
+    align-items: flex-end !important;
+    margin-top: 0.5rem;
+    gap: 0.5rem !important;
+  }
+
+  /* Dropdown user dan suhu agar tidak terlalu lebar */
+  .navbar .dropdown,
+  .navbar #realtime-temperature,
+  .navbar #realtime-temperature-mobile {
+    max-width: 90vw;
+    width: auto;
+  }
+}
