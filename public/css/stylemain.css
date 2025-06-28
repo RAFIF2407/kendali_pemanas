@@ -203,7 +203,6 @@ input.form-control {
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
 }
 
-
 .tooltip-wrapper:hover .custom-tooltip-menu {
   visibility: visible;
   opacity: 1;
@@ -252,11 +251,18 @@ input.form-control {
   }
 }
 
-.custom-container-rt{
+.custom-container-rt {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 60px;
   height: 20px;
+}
+
+@media (max-width: 768px) {
+  .container-fluid.position-relative {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
 }
