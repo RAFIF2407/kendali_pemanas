@@ -281,11 +281,14 @@ input.form-control {
 @media (max-width: 600px) {
   .top_tittle {
     font-size: 1rem !important;
-    padding: 0 2px !important;
+    padding: 0 4px !important;
     margin: 0 !important;
     word-break: break-word;
     width: 100%;
     text-align: center;
+  }
+  .navbar .flex-grow-1 {
+    min-width: 0;
   }
 }
 

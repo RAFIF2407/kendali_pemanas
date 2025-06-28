@@ -101,31 +101,23 @@
     </div>
 
     <nav class="navbar navbar-expand">
-      <div class="container-fluid position-relative d-flex flex-column flex-md-row align-items-center justify-content-between">
+      <div class="container-fluid position-relative d-flex flex-row align-items-center justify-content-between flex-wrap w-100">
         <div class="tooltip-wrapper">
         <button id="toggleSidebar" type="button" class="btn-hover rounded">
           <img src="images/DashboardSquare1.png" width="33" height="33" />
         </button>
         <div class="custom-tooltip-menu">Menu Bar</div>
       </div> 
-        <div class="mx-auto w-100">
-          <h4 class="top_tittle text-break text-center" style="color: aliceblue">
+        <div class="flex-grow-1 mx-2">
+          <h4 class="top_tittle text-break text-center mb-0" style="color: aliceblue">
             Modul Praktikum Kendali PID pada Pemanas Berbasis Internet of Things
           </h4>
         </div>
 
 <!-- Untuk mobile: tampilkan suhu di atas tombol user/logout -->
 <div class="d-flex flex-column flex-md-row align-items-end align-items-md-center gap-1 gap-md-3 me-3">
-<div class="d-flex d-md-none align-items-center order-1 order-md-2" style="height:40px;">
-  <span class="bg-primary text-white px-2 py-1 rounded-start" style="font-size:0.95rem; height:32px; display:flex; align-items:center;">
-    Suhu
-  </span>
-  <span id="realtime-temperature" class="fw-normal text-danger px-2 py-1 rounded-end border border-primary border-start-0" style="font-size:1.1rem; background:white; height:32px; display:flex; align-items:center;">
-    --°C
-  </span>
-</div>
 
-        <div class="dropdown order-2 order-md-1">
+        <div class="dropdown">
           <button
             class="btn-hover rounded dropdown-toggle"
             type="button"
@@ -159,6 +151,15 @@
             </a>
           </div>
         </div>
+
+        <div class="d-flex align-items-center" style="height:40px;">
+        <span class="bg-primary text-white px-2 py-1 rounded-start" style="font-size:0.95rem; height:32px; display:flex; align-items:center;">
+          Suhu
+        </span>
+        <span id="realtime-temperature" class="fw-normal text-danger px-2 py-1 rounded-end border border-primary border-start-0" style="font-size:1.1rem; background:white; height:32px; display:flex; align-items:center;">
+          --°C
+        </span>
+
         </div>
       </div>
     </nav>
