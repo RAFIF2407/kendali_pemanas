@@ -266,3 +266,22 @@ input.form-control {
     align-items: stretch !important;
   }
 }
+
+@media (max-width: 768px) {
+  .container-fluid.position-relative.d-flex {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+  .mx-auto {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .top_tittle {
+    font-size: 1rem !important;
+    padding: 0 4px;
+    word-break: break-word;
+  }
+}
