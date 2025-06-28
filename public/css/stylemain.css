@@ -285,3 +285,23 @@ input.form-control {
     word-break: break-word;
   }
 }
+
+footer {
+  background: #0a2c64;
+}
+
+footer .text-truncate {
+  max-width: 60vw;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+@media (max-width: 600px) {
+  footer .text-truncate {
+    max-width: 45vw;
+    font-size: 0.85rem;
+  }
+  .wp-block-social-links {
+    gap: 0.3rem !important;
+  }
+}
