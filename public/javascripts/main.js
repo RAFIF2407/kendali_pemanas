@@ -102,6 +102,10 @@ socket.on("mqtt-temperature", function (data) {
     suhu = suhu.toFixed(1);
     const tempElem = document.getElementById("realtime-temperature");
     if (tempElem) tempElem.textContent = suhu + " °C";
+    const tempElemMobile = document.getElementById(
+      "realtime-temperature-mobile"
+    );
+    if (tempElemMobile) tempElemMobile.textContent = suhu + " °C";
   }
 });
 
