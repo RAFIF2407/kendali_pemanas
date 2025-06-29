@@ -569,7 +569,7 @@ function exportToCSV() {
     let sp = "";
     let csvHeader = "";
     let csvContent = "";
-
+    let pidParams = ""; 
     // Ambil nilai sp dari baris pertama (jika ada)
     if (rows.length > 0) {
       if (mode === "satuposisi" || mode === "pid") {
@@ -589,7 +589,7 @@ function exportToCSV() {
       if (kd !== "" && kd !== null && kd !== undefined) pidParams += `-kd${kd}`;
       if (ki !== "" && ki !== null && ki !== undefined) pidParams += `-ki${ki}`;
     }
-    
+
     // Pilihan header dan kolom per mode
     if (mode === "satuposisi") {
       csvHeader = "Time (s), Set Point, TA\n";
@@ -628,7 +628,11 @@ function exportToCSV() {
     const link = document.createElement("a");
     // const url = URL.createObjectURL(blob);
     link.setAttribute("href", URL.createObjectURL(blob));
-    link.setAttribute("download", `data_${sp}_${mode}.csv`);
+  if (mode === "pid") {
+    link.setAttribute("download", `data-${sp}-pid${pidParams}.csv`);
+  } else {
+    link.setAttribute("download", `data-${sp}-${mode}.csv`);
+  }
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
@@ -652,7 +656,7 @@ window.addEventListener("unload", function () {
 // setInterval untuk mengirim heartbeat setiap 60 detik//
 setInterval(() => {
   fetch("/main/heartbeat", { method: "POST" });
-}, 60000); // setiap 60 detik
+}, 10 * 60 * 1000); // setiap 10 menit
 
 let idleTimeout = null;
 const AUTO_LOGOUT_TIME = 10 * 60 * 1000; // 10 menit
