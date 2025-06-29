@@ -566,8 +566,18 @@ function exportToCSV() {
   // Ekspor satu file per mode
   Object.entries(modeGroups).forEach(([mode, rows]) => {
     console.log("Export CSV dipanggil");
+    let sp = "";
     let csvHeader = "";
     let csvContent = "";
+
+    // Ambil nilai sp dari baris pertama (jika ada)
+    if (rows.length > 0) {
+      if (mode === "satuposisi" || mode === "pid") {
+        sp = rows[0].SetPoint ?? "";
+      } else if (mode === "duaposisi") {
+        sp = `${rows[0].TSPL ?? ""}-${rows[0].TSPH ?? ""}`;
+      }
+    }
     // Pilihan header dan kolom per mode
     if (mode === "satuposisi") {
       csvHeader = "Time (s), Set Point, TA\n";
@@ -606,7 +616,7 @@ function exportToCSV() {
     const link = document.createElement("a");
     // const url = URL.createObjectURL(blob);
     link.setAttribute("href", URL.createObjectURL(blob));
-    link.setAttribute("download", `data_grafik_${mode}.csv`);
+    link.setAttribute("download", `data_${sp}_${mode}.csv`);
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
