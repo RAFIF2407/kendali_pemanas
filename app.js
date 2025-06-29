@@ -57,7 +57,7 @@ app.use(
     resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: true, // false untuk developer/lokal | true untuk production/online
+      // secure: false, // false untuk developer/lokal | true untuk production/online
       secure: process.env.NODE_ENV === "production", // AKTIFKAN Cookie hanya dikirim di HTTPS jika dalam produksi
       sameSite: "lax",
       maxAge: 10 * 60 * 1000, // 10 menit

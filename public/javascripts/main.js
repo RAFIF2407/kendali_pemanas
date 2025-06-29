@@ -1,5 +1,5 @@
 //koneksi ke server socket.io//
-var socket = io("https://kendalipemanas-production.up.railway.app/", {
+var socket = io("https://kendalipemanas.up.railway.app/", {
   query: { nim: String(window.myNim).trim() },
 });
 
