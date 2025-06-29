@@ -1,15 +1,6 @@
 // Import library MQTT//
 var mqtt = require("async-mqtt");
-var { Pool } = require("pg");
-
-// Inisialisasi pool koneksi ke PostgreSQL//
-const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "pemanas",
-  password: "123",
-  port: 5432,
-});
+const { pool } = require("../helpers/util");
 
 // Inisialisasi koneksi MQTT//
 const brokerUrl = "mqtts://c0edc1d431244359956f48c792bcbe9e.s1.eu.hivemq.cloud";
