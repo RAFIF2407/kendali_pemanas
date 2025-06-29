@@ -619,13 +619,21 @@ window.onbeforeunload = function () {
   socket.off("new_suhu");
 };
 
+// Auto logout saat tab/browser ditutup (desktop & mobile)
+window.addEventListener("unload", function () {
+  // Pastikan logout ke server tetap dikirim walau tab ditutup
+  navigator.sendBeacon("/logout");
+  // Optional: disconnect socket (tidak wajib, karena tab akan tertutup)
+  try { socket.disconnect(); } catch (e) {}
+});
+
 // setInterval untuk mengirim heartbeat setiap 60 detik//
 setInterval(() => {
   fetch("/main/heartbeat", { method: "POST" });
 }, 60000); // setiap 60 detik
 
 let idleTimeout = null;
-const AUTO_LOGOUT_TIME = 10 * 60 * 1000; // 5 menit
+const AUTO_LOGOUT_TIME = 10 * 60 * 1000; // 10 menit
 
 function resetIdleTimer() {
   if (idleTimeout) clearTimeout(idleTimeout);

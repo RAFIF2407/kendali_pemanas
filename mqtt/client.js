@@ -209,7 +209,7 @@ async function reconnectMQTT(io) {
     await connectMQTT(io);
   } catch (err) {
     console.error("Reconnect attempt failed:", err.message);
-    setTimeout(reconnect, 5000);
+    setTimeout(reconnectMQTT, 5000);
   }
 }
 

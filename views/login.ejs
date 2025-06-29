@@ -86,19 +86,17 @@
 
     <% if (typeof error !== 'undefined' && error) { %>
     <div
-      class="alert alert-danger alert-dismissible fade show position-fixed top-0 end-0 m-3"
+      class="alert alert-danger alert-dismissible fade show position-absolute top-0 end-0 m-3 px-2 py-2 d-flex align-items-center"
       role="alert"
-      style="z-index: 1055"
+      style="z-index: 1055; min-width: 220px"
     >
-      <%= error %>
+      <span><%= error %></span>
       <button
         type="button"
-        class="custom-btn-close"
+        class="custom-btn-danger ms-1 px-1 py-1"
         data-bs-dismiss="alert"
         aria-label="Close"
-      >
-        x
-      </button>
+      ></button>
     </div>
     <% } %>
   </body>

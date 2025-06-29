@@ -52,7 +52,7 @@ footer {
 
 .wp-block-social-link-anchor:active svg,
 .wp-block-social-link-anchor:focus svg {
-  background-color: rgb(0, 0, 255); /* Biru Bootstrap */
+  background-color: #0D6EFD; /* Biru Bootstrap */
   border-radius: 50%;
   box-shadow: 0 0 8px rgb(0, 0, 255);
   transition: background-color 0.2s, box-shadow 0.2s;
@@ -60,11 +60,11 @@ footer {
 }
 
 .wp-block-social-link-anchor:hover svg {
-  background-color: rgb(255, 255, 255);
+  background-color: #0D6EFD;
   border-radius: 50%;
   box-shadow: 0 0 8px #0D6EFD;
   transition: background-color 0.2s, box-shadow 0.2s;
-  color: #fff;
+  color: #ffffff;
 }
 
 .wp-block-social-link-label {
@@ -267,7 +267,11 @@ input.form-control {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 600px) {
+  .navbar .navbar-expand {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
   .container-fluid.position-relative.d-flex {
     flex-direction: column !important;
     align-items: stretch !important;
@@ -281,7 +285,7 @@ input.form-control {
 @media (max-width: 600px) {
   .top_tittle {
     font-size: 1rem !important;
-    padding: 0 4px !important;
+    padding: 0 1px !important;
     margin: 0 !important;
     word-break: break-word;
     width: 100%;
@@ -360,4 +364,7 @@ footer .text-truncate {
     padding-left: 4px !important;
     padding-right: 4px !important;
   }
+}
+#realtime-temperature {
+  white-space: nowrap !important;
 }
