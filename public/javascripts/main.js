@@ -661,7 +661,14 @@ function autoLogout() {
 }
 
 // Pantau aktivitas user
-["mousemove", "keydown", "mousedown", "touchstart"].forEach((evt) => {
+[
+  "mousemove",
+  "keydown",
+  "mousedown",
+  "touchstart",
+  "touchmove",
+  "scroll",
+].forEach((evt) => {
   document.addEventListener(evt, resetIdleTimer, true);
 });
 resetIdleTimer();
@@ -677,5 +684,17 @@ logoutButton.addEventListener("click", async () => {
 
   if (response.redirected) {
     window.location.href = response.url;
+  }
+});
+
+// Cek session ke server saat tab kembali aktif (misal setelah freeze di mobile)
+document.addEventListener("visibilitychange", async function () {
+  if (document.visibilityState === "visible") {
+    // Cek session ke server
+    const res = await fetch("/main/heartbeat", { method: "POST" });
+    if (res.status === 401 || res.redirected) {
+      // Jika session expired, redirect ke login
+      window.location.href = "/";
+    }
   }
 });
