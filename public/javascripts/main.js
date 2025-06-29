@@ -578,6 +578,18 @@ function exportToCSV() {
         sp = `${rows[0].TSPL ?? ""}-${rows[0].TSPH ?? ""}`;
       }
     }
+
+    if (mode === "pid") {
+      // Ambil nilai Kp, Ki, Kd dari baris pertama
+      const kp = rows[0].Kp ?? "";
+      const ki = rows[0].Ki ?? "";
+      const kd = rows[0].Kd ?? "";
+      // Susun string parameter sesuai yang diisi
+      if (kp !== "" && kp !== null && kp !== undefined) pidParams += `-kp${kp}`;
+      if (kd !== "" && kd !== null && kd !== undefined) pidParams += `-kd${kd}`;
+      if (ki !== "" && ki !== null && ki !== undefined) pidParams += `-ki${ki}`;
+    }
+    
     // Pilihan header dan kolom per mode
     if (mode === "satuposisi") {
       csvHeader = "Time (s), Set Point, TA\n";
