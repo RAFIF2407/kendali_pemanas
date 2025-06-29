@@ -155,16 +155,16 @@ async function connectMQTT(io) {
 // Fungsi untuk mengirim data ke broker MQTT untuk backup jika ingin mengambil data lama//
 async function backupAndClearOutputCurrent(nim, idTuningLama) {
   try {
-    await pool.query(`DELETE FROM outputold WHERE nim = $1`, [nim]);
+    await pool.query(`DELETE FROM public.outputold WHERE nim = $1`, [nim]);
 
     await pool.query(
-      `INSERT INTO outputold (suhu, nim, time, id_tuning, set_point, set_point_atas, set_point_bawah, kp, ki, kd, mode)
-      SELECT suhu, nim, time, $2, set_point, set_point_atas, set_point_bawah, kp, ki, kd, mode FROM outputcurrent WHERE nim = $1`,
+      `INSERT INTO public.outputold (suhu, nim, time, id_tuning, set_point, set_point_atas, set_point_bawah, kp, ki, kd, mode)
+      SELECT suhu, nim, time, $2, set_point, set_point_atas, set_point_bawah, kp, ki, kd, mode FROM public.outputcurrent WHERE nim = $1`,
       [nim, idTuningLama]
     );
-    await pool.query(`DELETE FROM outputcurrent WHERE nim = $1`, [nim]);
+    await pool.query(`DELETE FROM public.outputcurrent WHERE nim = $1`, [nim]);
     console.log(
-      `Backup untuk NIM ${nim} selesai. Outputold hanya simpan 1 sesi terakhir user ini`
+      `Backup untuk NIM ${nim} selesai. public.Outputold hanya simpan 1 sesi terakhir user ini`
     );
   } catch (err) {
     console.error("Error saat backup data:", err.message);
@@ -184,7 +184,7 @@ async function insertOutputWithSetpoint(nim, suhu, time, idTuningBaru) {
 
   // 2. Insert ke outputcurrent
   await pool.query(
-    `INSERT INTO outputcurrent
+    `INSERT INTO public.outputcurrent
       (suhu, nim, time, id_tuning, set_point, set_point_atas, set_point_bawah, kp, ki, kd, mode)
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
     [
