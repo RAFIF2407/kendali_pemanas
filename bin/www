@@ -14,11 +14,11 @@ const client = require("../mqtt/client");
 module.exports = client.connectMQTT(io);
 
 var port = process.env.PORT || 3000;
-var hostname = "0.0.0.0";
+// var hostname = "0.0.0.0";
 
-server.listen(port, hostname, function () {
+server.listen(port, function () {
   // Menjalankan server HTTP pada port dan hostname tertentu dengan callback yang akan dijalankan setelah server berjalan
-  console.log(`Server running at http://${hostname}:${port}/`);
+  console.log(`Server running at ${port}`);
 });
 
 function normalizePort(val) {
