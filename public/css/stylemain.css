@@ -368,3 +368,44 @@ footer .text-truncate {
 #realtime-temperature {
   white-space: nowrap !important;
 }
+
+@media (max-width: 600px) {
+  /* Input form responsif */
+  .sidebar .input-group-sm,
+  .sidebar .form-control,
+  .sidebar select,
+  .sidebar input[type="number"] {
+    width: 100% !important;
+    min-width: 0;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* Tombol responsif */
+  .sidebar .btn,
+  .sidebar button {
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    padding: 8px 0;
+    display: block;
+  }
+
+  /* Tooltip wrapper agar tombol tidak terlalu mepet */
+  .sidebar .tooltip-wrapper {
+    width: 100%;
+    display: block;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  /* Atur container tombol agar stack ke bawah */
+  .sidebar .text-center.mt-3,
+  .sidebar .mt-1 {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: stretch;
+  }
+}
