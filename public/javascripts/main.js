@@ -7,16 +7,38 @@ let sudahKonek = false;
 let socketAlertTimeout = null;
 let alertCounter = 0;
 let suhuTimeout = null;
-const SUHU_TIMEOUT_MS = 10000; // 10 detik
+const SUHU_TIMEOUT_MS = 5000; // 10 detik
 let tuningActive = false;
 let tuningTimeout = null;
 
 function showSuhuTimeoutAlert() {
   if (!tuningActive) {
-    showBootstrapAlert(
-      "Tidak ada data suhu! Pastikan WiFi mikrokontroler terhubung dan ada koneksi internet.",
-      3000
-    );
+    // Cek jika alert sudah ada, jangan buat dobel
+    if (!document.getElementById("suhu-alert")) {
+      const alertDiv = document.createElement("div");
+      alertDiv.id = "suhu-alert";
+      alertDiv.className =
+        "alert alert-danger alert-dismissible fade show position-fixed top-0 end-0 m-3 p-auto";
+      alertDiv.role = "alert";
+      alertDiv.style.zIndex = 1060;
+      alertDiv.innerHTML = `
+        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+        Tidak ada data suhu! Pastikan WiFi mikrokontroler terhubung dan ada koneksi internet.
+      `;
+      document.body.appendChild(alertDiv);
+    }
+  }
+}
+
+// Hilangkan alert jika data suhu sudah diterima lagi
+function hideSuhuTimeoutAlert() {
+  const alertDiv = document.getElementById("suhu-alert");
+  if (alertDiv) {
+    alertDiv.classList.remove("show");
+    alertDiv.classList.add("hide");
+    setTimeout(() => {
+      if (alertDiv.parentNode) alertDiv.remove();
+    }, 200);
   }
 }
 
@@ -116,6 +138,8 @@ socket.on("mqtt-temperature", function (data) {
     const tempElem = document.getElementById("realtime-temperature");
     if (tempElem) tempElem.textContent = suhu + " °C";
   }
+  // Hilangkan alert jika ada data suhu
+  hideSuhuTimeoutAlert();
   // Reset timer hanya jika tuning tidak aktif
   if (!tuningActive) {
     if (suhuTimeout) clearTimeout(suhuTimeout);
