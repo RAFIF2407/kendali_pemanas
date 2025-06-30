@@ -23,7 +23,7 @@ function showSuhuTimeoutAlert() {
       alertDiv.style.zIndex = 1060;
       alertDiv.innerHTML = `
         <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-        Tidak ada data suhu! Pastikan WiFi mikrokontroler terhubung dan ada koneksi internet.
+        Make sure the PID Trainer is connected to Wifi and there is an internet connection!
       `;
       document.body.appendChild(alertDiv);
     }
