@@ -707,12 +707,12 @@ function exportToCSV() {
 }
 
 // Fungsi untuk menghentikan dan membersihkan polling saat halaman di-refresh atau ditutup
-window.onbeforeunload = function () {
-  socket.off("new_suhu");
-};
+// window.onbeforeunload = function () {
+//   socket.off("new_suhu");
+// };
 
 // Auto logout saat tab/browser ditutup (desktop & mobile)
-window.addEventListener("unload", function () {
+window.addEventListener("pagehide", function () {
   // Pastikan logout ke server tetap dikirim walau tab ditutup
   navigator.sendBeacon("/logout");
   // Optional: disconnect socket (tidak wajib, karena tab akan tertutup)
