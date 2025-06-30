@@ -6,6 +6,19 @@ var socket = io("https://pid-trainer.up.railway.app/", {
 let sudahKonek = false;
 let socketAlertTimeout = null;
 let alertCounter = 0;
+let suhuTimeout = null;
+const SUHU_TIMEOUT_MS = 10000; // 10 detik
+let tuningActive = false;
+let tuningTimeout = null;
+
+function showSuhuTimeoutAlert() {
+  if (!tuningActive) {
+    showBootstrapAlert(
+      "Tidak ada data suhu! Pastikan WiFi mikrokontroler terhubung dan ada koneksi internet.",
+      3000
+    );
+  }
+}
 
 function showBootstrapAlert(message, timeout) {
   alertCounter++;
@@ -102,6 +115,11 @@ socket.on("mqtt-temperature", function (data) {
     suhu = suhu.toFixed(1);
     const tempElem = document.getElementById("realtime-temperature");
     if (tempElem) tempElem.textContent = suhu + " °C";
+  }
+  // Reset timer hanya jika tuning tidak aktif
+  if (!tuningActive) {
+    if (suhuTimeout) clearTimeout(suhuTimeout);
+    suhuTimeout = setTimeout(showSuhuTimeoutAlert, SUHU_TIMEOUT_MS);
   }
 });
 
@@ -348,6 +366,9 @@ controlModeSelect.addEventListener("change", function () {
 startButton.addEventListener("click", function (event) {
   event.preventDefault();
 
+  tuningActive = true;
+  if (suhuTimeout) clearTimeout(suhuTimeout); // matikan timer suhu
+
   if (controlModeSelect.value === "Choice Mode") {
     alert("Please select the control mode before starting");
     return;
@@ -428,6 +449,16 @@ startButton.addEventListener("click", function (event) {
   clearChart();
   allData = [];
   resetListener();
+  // Set timer tuning selesai otomatis
+  if (tuningTimeout) clearTimeout(tuningTimeout);
+  if (waktuSamplingUser) {
+    tuningTimeout = setTimeout(() => {
+      tuningActive = false;
+      // Aktifkan kembali timer suhu
+      if (suhuTimeout) clearTimeout(suhuTimeout);
+      suhuTimeout = setTimeout(showSuhuTimeoutAlert, SUHU_TIMEOUT_MS);
+    }, (waktuSamplingUser - 0.1) * 1000); // waktu tuning dikurangi 0.1 detik
+  }
 });
 
 // listener tombol stop//
@@ -447,6 +478,12 @@ stopButton.addEventListener("click", function () {
 
   console.log("Kontrol dihentikan");
   alert("Tuning stopped!");
+
+  tuningActive = false;
+  if (tuningTimeout) clearTimeout(tuningTimeout);
+  // Aktifkan kembali timer suhu
+  if (suhuTimeout) clearTimeout(suhuTimeout);
+  suhuTimeout = setTimeout(showSuhuTimeoutAlert, SUHU_TIMEOUT_MS);
 });
 
 // listener tombol clear//
