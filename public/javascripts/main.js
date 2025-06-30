@@ -336,6 +336,11 @@ document.addEventListener("DOMContentLoaded", function () {
     sidebar.classList.remove("open");
     overlay.classList.remove("show");
   });
+
+  if (!tuningActive) {
+    if (suhuTimeout) clearTimeout(suhuTimeout);
+    suhuTimeout = setTimeout(showSuhuTimeoutAlert, SUHU_TIMEOUT_MS);
+  }
 });
 
 // memilih mode kontrol kendali//
