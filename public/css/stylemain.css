@@ -378,7 +378,7 @@ footer .text-truncate {
     width: 100% !important;
     min-width: 0;
     font-size: 1rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.1rem;
   }
 
   /* Tombol responsif */
@@ -386,7 +386,7 @@ footer .text-truncate {
   .sidebar button {
     width: 100%;
     min-width: 0;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.1rem;
     font-size: 1rem;
     padding: 8px 0;
     display: block;
@@ -396,7 +396,7 @@ footer .text-truncate {
   .sidebar .tooltip-wrapper {
     width: 100%;
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.1rem;
     text-align: center;
   }
 

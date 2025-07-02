@@ -7,7 +7,7 @@ let sudahKonek = false;
 let socketAlertTimeout = null;
 let alertCounter = 0;
 let suhuTimeout = null;
-const SUHU_TIMEOUT_MS = 5000; // 10 detik
+const SUHU_TIMEOUT_MS = 5000; // 5 detik
 let tuningActive = false;
 let tuningTimeout = null;
 
@@ -399,7 +399,7 @@ startButton.addEventListener("click", function (event) {
   if (suhuTimeout) clearTimeout(suhuTimeout); // matikan timer suhu
 
   if (controlModeSelect.value === "Choice Mode") {
-    alert("Please select the control mode before starting");
+    alert("Please select the control mode before starting!");
     return;
   }
 
@@ -706,11 +706,6 @@ function exportToCSV() {
   });
 }
 
-// Fungsi untuk menghentikan dan membersihkan polling saat halaman di-refresh atau ditutup
-// window.onbeforeunload = function () {
-//   socket.off("new_suhu");
-// };
-
 // Auto logout saat tab/browser ditutup (desktop & mobile)
 window.addEventListener("pagehide", function () {
   // Pastikan logout ke server tetap dikirim walau tab ditutup
@@ -722,10 +717,10 @@ window.addEventListener("pagehide", function () {
 // setInterval untuk mengirim heartbeat setiap 60 detik//
 setInterval(() => {
   fetch("/main/heartbeat", { method: "POST" });
-}, 10 * 60 * 1000); // setiap 10 menit
+}, 15 * 60 * 1000); // setiap 15 menit
 
 let idleTimeout = null;
-const AUTO_LOGOUT_TIME = 10 * 60 * 1000; // 10 menit
+const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 menit
 
 function resetIdleTimer() {
   if (idleTimeout) clearTimeout(idleTimeout);
