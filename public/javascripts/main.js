@@ -717,7 +717,7 @@ window.addEventListener("pagehide", function () {
 // setInterval untuk mengirim heartbeat setiap 60 detik//
 setInterval(() => {
   fetch("/main/heartbeat", { method: "POST" });
-}, 15 * 60 * 1000); // setiap 15 menit
+}, 10000); // setiap 15 menit
 
 let idleTimeout = null;
 const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 menit
