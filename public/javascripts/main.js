@@ -355,7 +355,7 @@ function addTSPLTSPHValidation() {
     const tsph = parseFloat(tsphInput.value);
     if (!isNaN(tspl) && !isNaN(tsph) && tspl > tsph) {
       tsplInput.value = tsph; // Set TSPL sama dengan TSPH jika lebih besar
-      alert("TSPL tidak boleh lebih tinggi dari TSPH!");
+      alert("TSPL cannot be higher than TSPH!");
     }
   });
 
@@ -365,7 +365,7 @@ function addTSPLTSPHValidation() {
     const tsph = parseFloat(tsphInput.value);
     if (!isNaN(tspl) && !isNaN(tsph) && tspl > tsph) {
       tsphInput.value = tspl; // Set TSPH sama dengan TSPL jika lebih kecil
-      alert("TSPH tidak boleh lebih rendah dari TSPL!");
+      alert("TSPH cannot be lower than TSPL!");
     }
   });
 }
@@ -754,7 +754,7 @@ window.addEventListener("pagehide", function () {
 // setInterval untuk mengirim heartbeat setiap 60 detik//
 setInterval(() => {
   fetch("/main/heartbeat", { method: "POST" });
-}, 10000); // setiap 15 menit
+}, 5000); // 5 detik 
 
 let idleTimeout = null;
 const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 menit
