@@ -343,6 +343,33 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
+// Setelah elemen input dibuat (misal setelah controlModeSelect change)
+function addTSPLTSPHValidation() {
+  const tsplInput = document.getElementById("set_point_bawah");
+  const tsphInput = document.getElementById("set_point_atas");
+  if (!tsplInput || !tsphInput) return;
+
+  // Saat TSPL diubah
+  tsplInput.addEventListener("input", function () {
+    const tspl = parseFloat(tsplInput.value);
+    const tsph = parseFloat(tsphInput.value);
+    if (!isNaN(tspl) && !isNaN(tsph) && tspl > tsph) {
+      tsplInput.value = tsph; // Set TSPL sama dengan TSPH jika lebih besar
+      alert("TSPL tidak boleh lebih tinggi dari TSPH!");
+    }
+  });
+
+  // Saat TSPH diubah
+  tsphInput.addEventListener("input", function () {
+    const tspl = parseFloat(tsplInput.value);
+    const tsph = parseFloat(tsphInput.value);
+    if (!isNaN(tspl) && !isNaN(tsph) && tspl > tsph) {
+      tsphInput.value = tspl; // Set TSPH sama dengan TSPL jika lebih kecil
+      alert("TSPH tidak boleh lebih rendah dari TSPL!");
+    }
+  });
+}
+
 // memilih mode kontrol kendali//
 controlModeSelect.addEventListener("change", function () {
   inputFieldsDiv.innerHTML = "";
@@ -363,6 +390,7 @@ controlModeSelect.addEventListener("change", function () {
                     <label for="set_point_bawah" class="form-label">Set Point Low</label>
                     <input type="number" id="set_point_bawah" placeholder="Enter TSPL value" class="form-control rounded-1" value="" step="0.1" required>
                 </div>`;
+                addTSPLTSPHValidation();
       break;
 
     case "pid":
@@ -381,7 +409,7 @@ controlModeSelect.addEventListener("change", function () {
                       this.value === "pid"
                         ? `
                         <label for="ki" class="form-label">Ki</label>
-                        <input type="number" id="ki" placeholder="Enter ki value" class="form-control rounded-1" value="" step="0.1">`
+                        <input type="number" id="ki" placeholder="Enter ki value" class="form-control rounded-1" value="" step="0.01">`
                         : ""
                     }
                     <label for="sp" class="form-label">Set Point</label>
@@ -545,14 +573,14 @@ function initializeChart() {
         {
           label: "TSPH",
           data: [],
-          borderColor: "orange",
+          borderColor: "maroon",
           fill: false,
           tension: 0.1,
         },
         {
           label: "TSPL",
           data: [],
-          borderColor: "yellow",
+          borderColor: "coral",
           fill: false,
           tension: 0.1,
         },
@@ -566,6 +594,15 @@ function initializeChart() {
         },
         x: {
           duration: 900,
+        },
+      },
+      plugins: {
+        legend: {
+          labels: {
+            font: {
+              weight: "bold", // <-- label legend lebih tebal
+            },
+          },
         },
       },
       scales: {
