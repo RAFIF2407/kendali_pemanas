@@ -600,8 +600,9 @@ function initializeChart() {
         legend: {
           labels: {
             font: {
-              weight: "bold", // <-- label legend lebih tebal
+              weight: "bolder", // <-- label legend lebih tebal
             },
+            color: "black", // <-- label legend berwarna hitam
           },
         },
       },
