@@ -60,7 +60,7 @@ app.use(
       // secure: false, // false untuk developer/lokal | true untuk production/online
       secure: process.env.NODE_ENV === "production", // AKTIFKAN Cookie hanya dikirim di HTTPS jika dalam produksi
       sameSite: "lax",
-      maxAge: 24 * 60 * 60 * 1000, // 1 hari dalam milidetik
+      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
     },
   })
 );
