@@ -1,4 +1,4 @@
-lrequire("dotenv").config();
+require("dotenv").config();
 var pg = require("pg");
 var createError = require("http-errors");
 var express = require("express");
