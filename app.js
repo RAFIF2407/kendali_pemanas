@@ -1,4 +1,4 @@
-require("dotenv").config();
+lrequire("dotenv").config();
 var pg = require("pg");
 var createError = require("http-errors");
 var express = require("express");
@@ -60,7 +60,7 @@ app.use(
       // secure: false, // false untuk developer/lokal | true untuk production/online
       secure: process.env.NODE_ENV === "production", // AKTIFKAN Cookie hanya dikirim di HTTPS jika dalam produksi
       sameSite: "lax",
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      maxAge: 24 * 60 * 60 * 1000),
     },
   })
 );
