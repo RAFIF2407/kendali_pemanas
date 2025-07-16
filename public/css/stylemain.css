@@ -162,6 +162,20 @@ input.form-control {
   padding: auto;
 }
 
+#realtime-temperature {
+  white-space: nowrap !important;
+}
+
+footer {
+  background: #0a2c64;
+}
+
+footer .text-truncate {
+  max-width: 60vw;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .custom-alert-green {
   background-color: #27ae60 !important;
   color: #fff !important;
@@ -242,15 +256,6 @@ input.form-control {
   opacity: 0.5;
 }
 
-/* Responsive: tooltip di bawah tombol di mobile */
-@media (max-width: 600px) {
-  .custom-tooltip {
-    top: 125%;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-}
-
 .custom-container-rt {
   display: flex;
   flex-direction: column;
@@ -260,14 +265,23 @@ input.form-control {
   height: 20px;
 }
 
-@media (max-width: 768px) {
+/* Responsive: tooltip di bawah tombol di mobile */
+@media (max-width: 950px) {
+  .custom-tooltip {
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 950px) {
   .container-fluid.position-relative {
     flex-direction: column !important;
     align-items: stretch !important;
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 950px) {
   .navbar .navbar-expand {
     flex-direction: column !important;
     align-items: stretch !important;
@@ -282,7 +296,7 @@ input.form-control {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 950px) {
   .top_tittle {
     font-size: 1rem !important;
     padding: 0 1px !important;
@@ -296,17 +310,7 @@ input.form-control {
   }
 }
 
-footer {
-  background: #0a2c64;
-}
-
-footer .text-truncate {
-  max-width: 60vw;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-@media (max-width: 600px) {
+@media (max-width: 950px) {
   footer .text-truncate {
     max-width: 45vw;
     font-size: 0.85rem;
@@ -316,7 +320,7 @@ footer .text-truncate {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 950px) {
   /* Menu (kiri) */
   .navbar .tooltip-wrapper {
     max-width: 48px;
@@ -354,7 +358,7 @@ footer .text-truncate {
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 950px) {
   .me-3,
   .ms-3,
   .mx-auto,
@@ -370,11 +374,8 @@ footer .text-truncate {
     padding-right: 4px !important;
   }
 }
-#realtime-temperature {
-  white-space: nowrap !important;
-}
 
-@media (max-width: 600px) {
+@media (max-width: 950px) {
   /* Input form responsif */
   .sidebar {
     overflow-y: auto;
