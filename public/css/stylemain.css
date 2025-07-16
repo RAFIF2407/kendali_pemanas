@@ -52,7 +52,7 @@ footer {
 
 .wp-block-social-link-anchor:active svg,
 .wp-block-social-link-anchor:focus svg {
-  background-color: #0D6EFD; /* Biru Bootstrap */
+  background-color: #0d6efd; /* Biru Bootstrap */
   border-radius: 50%;
   box-shadow: 0 0 8px rgb(0, 0, 255);
   transition: background-color 0.2s, box-shadow 0.2s;
@@ -60,9 +60,9 @@ footer {
 }
 
 .wp-block-social-link-anchor:hover svg {
-  background-color: #0D6EFD;
+  background-color: #0d6efd;
   border-radius: 50%;
-  box-shadow: 0 0 8px #0D6EFD;
+  box-shadow: 0 0 8px #0d6efd;
   transition: background-color 0.2s, box-shadow 0.2s;
   color: #ffffff;
 }
@@ -73,7 +73,7 @@ footer {
 }
 
 .wp-block-social-link-label:hover {
-  color: #0D6EFD;
+  color: #0d6efd;
   font-style: italic;
 }
 
@@ -128,7 +128,7 @@ footer {
 }
 
 .btn-hover:hover {
-  background-color: #0D6EFD;
+  background-color: #0d6efd;
   transition: 0.3s;
 }
 
@@ -336,7 +336,8 @@ footer .text-truncate {
   }
 
   /* Bagian kanan (user/logout & suhu) */
-  .navbar .d-flex.flex-column.flex-md-row.align-items-end.align-items-md-center {
+  .navbar
+    .d-flex.flex-column.flex-md-row.align-items-end.align-items-md-center {
     width: 100%;
     max-width: 100vw;
     align-items: flex-end !important;
@@ -354,7 +355,11 @@ footer .text-truncate {
 }
 
 @media (max-width: 600px) {
-  .me-3, .ms-3, .mx-auto, .mb-2, .gap-md-3 {
+  .me-3,
+  .ms-3,
+  .mx-auto,
+  .mb-2,
+  .gap-md-2 {
     margin-right: 0 !important;
     margin-left: 0 !important;
     margin-bottom: 0 !important;
@@ -371,6 +376,11 @@ footer .text-truncate {
 
 @media (max-width: 600px) {
   /* Input form responsif */
+  .sidebar {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* agar scroll halus di iOS */
+    max-height: 100vh;
+  }
   .sidebar .input-group-sm,
   .sidebar .form-control,
   .sidebar select,
@@ -405,7 +415,7 @@ footer .text-truncate {
   .sidebar .mt-1 {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.3rem;
     align-items: stretch;
   }
 }
