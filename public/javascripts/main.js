@@ -302,64 +302,8 @@ function resetListener() {
   });
 }
 
-async function fetchVarHistory() {
-  const url = "/main/riwayat-variabel";
-  const key = "varHist";
-  const expiry = 60 * 60 * 1000; // 1 jam
-
-  const cache = localStorage.getItem(key);
-  if (cache) {
-    const obj = JSON.parse(cache);
-    if (Date.now() - obj.ts < expiry) return obj.data;
-  }
-
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(res.status);
-  const data = await res.json();
-  localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
-  return data;
-}
-
-function fillDataList(id, setVals) {
-  const dl = document.getElementById(id);
-  if (!dl) return;
-  dl.innerHTML = "";
-  Array.from(setVals)
-    .sort((a, b) => a - b)
-    .forEach((v) => {
-      const o = document.createElement("option");
-      o.value = v;
-      dl.appendChild(o);
-    });
-}
-
-async function populateVars() {
-  try {
-    const data = await fetchVarHistory();
-    const kp = new Set(),
-      ki = new Set(),
-      kd = new Set();
-    data.forEach((v) => {
-      if (v.kp != null) kp.add(v.kp);
-      if (v.ki != null) ki.add(v.ki);
-      if (v.kd != null) kd.add(v.kd);
-    });
-    fillDataList("kp-history", kp);
-    fillDataList("ki-history", ki);
-    fillDataList("kd-history", kd);
-  } catch (e) {
-    console.error("Suggestion load error", e);
-  }
-}
-
 // --- Event Handler DOM--- //
 document.addEventListener("DOMContentLoaded", function () {
-    populateVars();
-      ["kp", "ki", "kd"].forEach((id) => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener("focus", populateVars);
-  });
-  
   const exportCsvBtn = document.getElementById("exportcsv");
   if (exportCsvBtn) {
     exportCsvBtn.replaceWith(exportCsvBtn.cloneNode(true));
@@ -397,6 +341,30 @@ document.addEventListener("DOMContentLoaded", function () {
     if (suhuTimeout) clearTimeout(suhuTimeout);
     suhuTimeout = setTimeout(showSuhuTimeoutAlert, SUHU_TIMEOUT_MS);
   }
+
+  async function prefillPID() {
+    try {
+      const res = await fetch("/main/prefill-variabel");
+      if (!res.ok) throw new Error(res.status);
+      const obj = await res.json();
+      if (obj.kp != null) document.getElementById("kp").value = obj.kp;
+      if (obj.ki != null) document.getElementById("ki").value = obj.ki;
+      if (obj.kd != null) document.getElementById("kd").value = obj.kd;
+    } catch (e) {
+      console.error("Prefill error", e);
+    }
+  }
+
+  controlModeSelect.addEventListener("change", function () {
+    if (this.value === "pid") {
+      setTimeout(prefillPID, 0);
+    }
+  });
+controlModeSelect.addEventListener("change", function () {
+  if (this.value === "pid") {
+    setTimeout(prefillPID, 0);
+  }
+});
 });
 
 // Setelah elemen input dibuat (misal setelah controlModeSelect change)
