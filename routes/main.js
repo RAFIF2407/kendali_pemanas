@@ -199,6 +199,20 @@ module.exports = function (db) {
         .json({ error: "Database query error", details: err.message });
     }
   });
+  // Mengembalikan historis variabel (kp, ki, kd)
+  router.get("/riwayat-variabel", requireLogin, async (req, res) => {
+    const nim = req.session.user.nim;
+    try {
+      const result = await db.query(
+        "SELECT kp, ki, kd FROM variabel WHERE nim = $1 ORDER BY updated_at DESC",
+        [nim]
+      );
+      res.json(result.rows);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Database query error" });
+    }
+  });
 
   //routes untuk sesi user proses tuning berjalan//
   router.post("/heartbeat", function (req, res) {

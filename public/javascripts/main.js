@@ -302,8 +302,64 @@ function resetListener() {
   });
 }
 
+async function fetchVarHistory() {
+  const url = "/main/riwayat-variabel";
+  const key = "varHist";
+  const expiry = 60 * 60 * 1000; // 1 jam
+
+  const cache = localStorage.getItem(key);
+  if (cache) {
+    const obj = JSON.parse(cache);
+    if (Date.now() - obj.ts < expiry) return obj.data;
+  }
+
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(res.status);
+  const data = await res.json();
+  localStorage.setItem(key, JSON.stringify({ ts: Date.now(), data }));
+  return data;
+}
+
+function fillDataList(id, setVals) {
+  const dl = document.getElementById(id);
+  if (!dl) return;
+  dl.innerHTML = "";
+  Array.from(setVals)
+    .sort((a, b) => a - b)
+    .forEach((v) => {
+      const o = document.createElement("option");
+      o.value = v;
+      dl.appendChild(o);
+    });
+}
+
+async function populateVars() {
+  try {
+    const data = await fetchVarHistory();
+    const kp = new Set(),
+      ki = new Set(),
+      kd = new Set();
+    data.forEach((v) => {
+      if (v.kp != null) kp.add(v.kp);
+      if (v.ki != null) ki.add(v.ki);
+      if (v.kd != null) kd.add(v.kd);
+    });
+    fillDataList("kp-history", kp);
+    fillDataList("ki-history", ki);
+    fillDataList("kd-history", kd);
+  } catch (e) {
+    console.error("Suggestion load error", e);
+  }
+}
+
 // --- Event Handler DOM--- //
 document.addEventListener("DOMContentLoaded", function () {
+    populateVars();
+      ["kp", "ki", "kd"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("focus", populateVars);
+  });
+  
   const exportCsvBtn = document.getElementById("exportcsv");
   if (exportCsvBtn) {
     exportCsvBtn.replaceWith(exportCsvBtn.cloneNode(true));
@@ -397,19 +453,22 @@ controlModeSelect.addEventListener("change", function () {
       inputFieldsDiv.innerHTML = ` 
                 <div class="container-fluid mx-auto">
                     <label for="kp" class="form-label">Kp</label>
-                    <input type="number" id="kp" placeholder="Enter kp value" class="form-control rounded-1" value="" step="0.1">
+                    <input type="number" id="kp" placeholder="Enter kp value" class="form-control rounded-1" value="" step="0.1" list="kp-history">
+                    <datalist id="kp-history"></datalist>
                     ${
                       this.value === "pd" || this.value === "pid"
                         ? ` 
                         <label for="kd" class="form-label">Kd</label>
-                        <input type="number" id="kd" placeholder="Enter kd value" class="form-control rounded-1" value="" step="0.1">`
+                        <input type="number" id="kd" placeholder="Enter kd value" class="form-control rounded-1" value="" step="0.1" list="kd-history">
+                        <datalist id="kd-history"></datalist>`
                         : ""
                     }
                     ${
                       this.value === "pid"
                         ? `
                         <label for="ki" class="form-label">Ki</label>
-                        <input type="number" id="ki" placeholder="Enter ki value" class="form-control rounded-1" value="" step="0.01">`
+                        <input type="number" id="ki" placeholder="Enter ki value" class="form-control rounded-1" value="" step="0.01" list="ki-history">
+                        <datalist id="ki-history"></datalist>`
                         : ""
                     }
                     <label for="sp" class="form-label">Set Point</label>
