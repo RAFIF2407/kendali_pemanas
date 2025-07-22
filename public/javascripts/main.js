@@ -34,6 +34,8 @@ function setupSocketHandlers() {
     sudahKonek = true;
     updateStatus();
     console.log("Terhubung ke server Socket.IO, id:", socket.id);
+
+    resetListener();
   });
 
   socket.on("disconnect", () => {
