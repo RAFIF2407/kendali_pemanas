@@ -359,6 +359,8 @@ document.addEventListener("DOMContentLoaded", function () {
       if (obj.kp != null) document.getElementById("kp").value = obj.kp;
       if (obj.ki != null) document.getElementById("ki").value = obj.ki;
       if (obj.kd != null) document.getElementById("kd").value = obj.kd;
+      if (obj.set_point != null)
+        document.getElementById("sp").value = obj.set_point;
     } catch (e) {
       console.error("Prefill error", e);
     }
@@ -430,13 +432,13 @@ controlModeSelect.addEventListener("change", function () {
       inputFieldsDiv.innerHTML = ` 
                 <div class="container-fluid mx-auto">
                     <label for="kp" class="form-label">Kp</label>
-                    <input type="number" id="kp" placeholder="Enter kp value" class="form-control rounded-1" value="" step="0.1" list="kp-history">
+                    <input type="number" id="kp" placeholder="Enter kp value" class="form-control rounded-1" value="" step="0.1" list="kp-history" required>
                     <datalist id="kp-history"></datalist>
                     ${
                       this.value === "pd" || this.value === "pid"
                         ? ` 
                         <label for="kd" class="form-label">Kd</label>
-                        <input type="number" id="kd" placeholder="Enter kd value" class="form-control rounded-1" value="" step="0.1" list="kd-history">
+                        <input type="number" id="kd" placeholder="Enter kd value" class="form-control rounded-1" value="" step="0.1" list="kd-history" required>
                         <datalist id="kd-history"></datalist>`
                         : ""
                     }
@@ -444,12 +446,13 @@ controlModeSelect.addEventListener("change", function () {
                       this.value === "pid"
                         ? `
                         <label for="ki" class="form-label">Ki</label>
-                        <input type="number" id="ki" placeholder="Enter ki value" class="form-control rounded-1" value="" step="0.01" list="ki-history">
+                        <input type="number" id="ki" placeholder="Enter ki value" class="form-control rounded-1" value="" step="0.01" list="ki-history" required>
                         <datalist id="ki-history"></datalist>`
                         : ""
                     }
                     <label for="sp" class="form-label">Set Point</label>
-                    <input type="number" id="sp" placeholder="Enter set point value" class="form-control rounded-1" value="" step="0.1" required>
+                    <input type="number" id="sp" placeholder="Enter set point value" class="form-control rounded-1" value="" step="0.1" list="sp-history" required>
+                    <datalist id="sp-history"></datalist>
                 </div>`;
       break;
   }

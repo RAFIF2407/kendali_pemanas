@@ -203,11 +203,11 @@ router.get("/prefill-variabel", requireLogin, async (req, res) => {
   const nim = req.session.user.nim;
   try {
     const { rows } = await db.query(
-      `SELECT kp, ki, kd FROM public.variabel
+      `SELECT kp, ki, kd, set_point FROM public.variabel
        WHERE nim = $1 ORDER BY updated_at DESC LIMIT 1`,
       [nim]
     );
-    res.json(rows[0] || { kp: null, ki: null, kd: null });
+    res.json(rows[0] || { kp: null, ki: null, kd: null, set_point: null });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Database query error" });
