@@ -23,7 +23,7 @@ function showSuhuTimeoutAlert() {
       alertDiv.style.zIndex = 1060;
       alertDiv.innerHTML = `
         <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-        Make sure the PID Trainer is connected to Wifi and there is an internet connection!
+        ⚠️ Make sure the PID Trainer is connected to Wifi and there is an internet connection!
       `;
       document.body.appendChild(alertDiv);
     }
@@ -88,7 +88,7 @@ function showSocketConnectingAlert() {
     alertDiv.style.zIndex = 1060;
     alertDiv.innerHTML = `
       <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-      Not Connected to Server, Trying to Connect...`;
+      ⚠️ Not Connected to Server, Trying to Connect...`;
     document.body.appendChild(alertDiv);
   }
 }
@@ -113,7 +113,10 @@ function updateStatus() {
   } else {
     if (socketAlertTimeout) clearTimeout(socketAlertTimeout);
     hideSocketConnectingAlert();
-    showBootstrapAlert("Login Successful!, Already Connected to Server", 1500);
+    showBootstrapAlert(
+      "✅ Login Successful!, Already Connected to Server",
+      1500
+    );
   }
 }
 
@@ -131,10 +134,13 @@ socket.on("disconnect", () => {
   console.log("Terputus dari server Socket.IO");
 });
 
+let suhuTerakhir = null;
+
 socket.on("mqtt-temperature", function (data) {
   let suhu = parseFloat(data.suhu);
   if (!isNaN(suhu)) {
     suhu = suhu.toFixed(1);
+    suhuTerakhir = parseFloat(suhu);
     const tempElem = document.getElementById("realtime-temperature");
     if (tempElem) tempElem.textContent = suhu + " °C";
   }
@@ -213,9 +219,12 @@ async function fetchCurrentOutputData() {
         mode: row.mode,
       });
     });
-    showBootstrapAlert("Latest tuning output displayed!", 1000);
+    showBootstrapAlert("🔔 Latest tuning output displayed!", 1000);
   } catch (err) {
-    showBootstrapAlert("Failed to retrieve output data: " + err.message, 1000);
+    showBootstrapAlert(
+      "⚠️ Failed to retrieve output data: " + err.message,
+      1000
+    );
   }
 }
 
@@ -256,10 +265,10 @@ async function fetchOldOutputData() {
         mode: row.mode,
       });
     });
-    showBootstrapAlert("Old tuning output displayed!", 1700);
+    showBootstrapAlert("🔔 Old tuning output displayed!", 1700);
   } catch (err) {
     showBootstrapAlert(
-      "Failed to retrieve old output data: " + err.message,
+      "⚠️ Failed to retrieve old output data: " + err.message,
       2000
     );
   }
@@ -360,11 +369,11 @@ document.addEventListener("DOMContentLoaded", function () {
       setTimeout(prefillPID, 0);
     }
   });
-controlModeSelect.addEventListener("change", function () {
-  if (this.value === "pid") {
-    setTimeout(prefillPID, 0);
-  }
-});
+  controlModeSelect.addEventListener("change", function () {
+    if (this.value === "pid") {
+      setTimeout(prefillPID, 0);
+    }
+  });
 });
 
 // Setelah elemen input dibuat (misal setelah controlModeSelect change)
@@ -379,7 +388,7 @@ function addTSPLTSPHValidation() {
     const tsph = parseFloat(tsphInput.value);
     if (!isNaN(tspl) && !isNaN(tsph) && tspl > tsph) {
       tsplInput.value = tsph; // Set TSPL sama dengan TSPH jika lebih besar
-      alert("TSPL cannot be higher than TSPH!");
+      alert("⚠️ TSPL cannot be higher than TSPH!");
     }
   });
 
@@ -389,7 +398,7 @@ function addTSPLTSPHValidation() {
     const tsph = parseFloat(tsphInput.value);
     if (!isNaN(tspl) && !isNaN(tsph) && tspl > tsph) {
       tsphInput.value = tspl; // Set TSPH sama dengan TSPL jika lebih kecil
-      alert("TSPH cannot be lower than TSPL!");
+      alert("⚠️ TSPH cannot be lower than TSPL!");
     }
   });
 }
@@ -414,7 +423,7 @@ controlModeSelect.addEventListener("change", function () {
                     <label for="set_point_bawah" class="form-label">Set Point Low</label>
                     <input type="number" id="set_point_bawah" placeholder="Enter TSPL value" class="form-control rounded-1" value="" step="0.1" required>
                 </div>`;
-                addTSPLTSPHValidation();
+      addTSPLTSPHValidation();
       break;
 
     case "pid":
@@ -447,14 +456,27 @@ controlModeSelect.addEventListener("change", function () {
 });
 
 // listener tombol start//
-startButton.addEventListener("click", function (event) {
+startButton.addEventListener("click", async function (event) {
   event.preventDefault();
+
+  if (suhuTerakhir !== null && suhuTerakhir >= 35.0) {
+    const confirmStart = await showConfirmationModal(
+      `⚠️ Temperature at this time ${suhuTerakhir}°C, continuing tuning may change the previous results. Continue?`
+    );
+    if (!confirmStart) {
+      showBootstrapAlert(
+        "⚠️ Tuning canceled due to unstable temperature!",
+        1700
+      );
+      return;
+    }
+  }
 
   tuningActive = true;
   if (suhuTimeout) clearTimeout(suhuTimeout); // matikan timer suhu
 
   if (controlModeSelect.value === "Choice Mode") {
-    alert("Please select the control mode before starting!");
+    alert("⚠️ Please select the control mode before starting!");
     return;
   }
 
@@ -518,11 +540,11 @@ startButton.addEventListener("click", function (event) {
     })
     .then((data) => {
       console.log("Response dari server:", data);
-      showBootstrapAlert("Data saved successfully!", 1700);
+      showBootstrapAlert("✅ Data saved successfully!", 1700);
     })
     .catch((error) => {
       console.error("Error:", error);
-      showBootstrapAlert("Error saving data!! Please try again.", 1700);
+      showBootstrapAlert("⚠️ Error saving data!! Please try again.", 1700);
     });
 
   pollingActive = true;
@@ -561,7 +583,7 @@ stopButton.addEventListener("click", function () {
     .catch((err) => console.error("Failed to send stop command", err));
 
   console.log("Kontrol dihentikan");
-  alert("Tuning stopped!");
+  alert("⚠️ Tuning stopped!");
 
   tuningActive = false;
   if (tuningTimeout) clearTimeout(tuningTimeout);
@@ -700,7 +722,7 @@ function exportToCSV() {
     let sp = "";
     let csvHeader = "";
     let csvContent = "";
-    let pidParams = ""; 
+    let pidParams = "";
     // Ambil nilai sp dari baris pertama (jika ada)
     if (rows.length > 0) {
       if (mode === "satuposisi" || mode === "pid") {
@@ -759,15 +781,59 @@ function exportToCSV() {
     const link = document.createElement("a");
     // const url = URL.createObjectURL(blob);
     link.setAttribute("href", URL.createObjectURL(blob));
-  if (mode === "pid") {
-    link.setAttribute("download", `data-${sp}-pid${pidParams}.csv`);
-  } else {
-    link.setAttribute("download", `data-${sp}-${mode}.csv`);
-  }
+    if (mode === "pid") {
+      link.setAttribute("download", `data-${sp}-pid${pidParams}.csv`);
+    } else {
+      link.setAttribute("download", `data-${sp}-${mode}.csv`);
+    }
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  });
+}
+
+function showConfirmationModal(message) {
+  return new Promise((resolve) => {
+    const modalBackdrop = document.createElement("div");
+    modalBackdrop.className = "modal-backdrop fade show";
+    modalBackdrop.style.zIndex = 1040;
+
+    const modal = document.createElement("div");
+    modal.className = "modal fade show d-block";
+    modal.style.backgroundColor = "rgba(0,0,0,0.3)";
+    modal.style.zIndex = 1050;
+    modal.innerHTML = `
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title">High Temperature Warning</h5>
+          </div>
+          <div class="modal-body">
+            <p>${message}</p>
+          </div>
+          <div class="modal-footer">
+            <button id="btnAllow" class="btn btn-success">Allow</button>
+            <button id="btnDenied" class="btn btn-secondary">Denied</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modalBackdrop);
+    document.body.appendChild(modal);
+
+    document.getElementById("btnAllow").addEventListener("click", () => {
+      modalBackdrop.remove();
+      modal.remove();
+      resolve(true);
+    });
+
+    document.getElementById("btnDenied").addEventListener("click", () => {
+      modalBackdrop.remove();
+      modal.remove();
+      resolve(false);
+    });
   });
 }
 
@@ -776,13 +842,15 @@ window.addEventListener("pagehide", function () {
   // Pastikan logout ke server tetap dikirim walau tab ditutup
   navigator.sendBeacon("/logout");
   // Optional: disconnect socket (tidak wajib, karena tab akan tertutup)
-  try { socket.disconnect(); } catch (e) {}
+  try {
+    socket.disconnect();
+  } catch (e) {}
 });
 
 // setInterval untuk mengirim heartbeat setiap 60 detik//
 setInterval(() => {
   fetch("/main/heartbeat", { method: "POST" });
-}, 5000); // 5 detik 
+}, 5000); // 5 detik
 
 let idleTimeout = null;
 const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 menit
