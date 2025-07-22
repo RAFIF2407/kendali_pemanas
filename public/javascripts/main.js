@@ -5,6 +5,7 @@ let suhuTimeout = null;
 const SUHU_TIMEOUT_MS = 5000; // 5 detik
 let tuningActive = false;
 let tuningTimeout = null;
+let suhuTerakhir = null;
 
 (async function initApp() {
   try {
@@ -43,8 +44,6 @@ function setupSocketHandlers() {
     updateStatus();
     console.log("Terputus dari server Socket.IO");
   });
-
-  let suhuTerakhir = null;
 
   socket.on("mqtt-temperature", function (data) {
     let suhu = parseFloat(data.suhu);
@@ -174,8 +173,6 @@ function updateStatus() {
     );
   }
 }
-
-
 
 //deklarasi variabel dan tombol//
 const controlModeSelect = document.getElementById("mode");
