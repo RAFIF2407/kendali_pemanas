@@ -1,8 +1,3 @@
-//koneksi ke server socket.io//
-var socket = io("https://pid-trainer.up.railway.app/", {
-  query: { nim: String(window.myNim).trim() },
-});
-
 let sudahKonek = false;
 let socketAlertTimeout = null;
 let alertCounter = 0;
@@ -10,6 +5,64 @@ let suhuTimeout = null;
 const SUHU_TIMEOUT_MS = 5000; // 5 detik
 let tuningActive = false;
 let tuningTimeout = null;
+
+(async function initApp() {
+  try {
+    const res = await fetch("/main/heartbeat", { method: "POST" });
+    if (res.status === 401 || res.redirected) {
+      window.location.href = "/";
+      return;
+    }
+
+    // Koneksi ke server socket.io
+    socket = io("https://pid-trainer.up.railway.app/", {
+      query: { nim: String(window.myNim).trim() },
+    });
+
+    // Setelah berhasil konek, jalankan semua event listener
+    setupSocketHandlers();
+  } catch (e) {
+    console.error("Gagal cek session:", e);
+    window.location.href = "/";
+  }
+})();
+
+updateStatus();
+
+function setupSocketHandlers() {
+  socket.on("connect", () => {
+    sudahKonek = true;
+    updateStatus();
+    console.log("Terhubung ke server Socket.IO, id:", socket.id);
+  });
+
+  socket.on("disconnect", () => {
+    sudahKonek = false;
+    updateStatus();
+    console.log("Terputus dari server Socket.IO");
+  });
+
+  let suhuTerakhir = null;
+
+  socket.on("mqtt-temperature", function (data) {
+    let suhu = parseFloat(data.suhu);
+    if (!isNaN(suhu)) {
+      suhu = suhu.toFixed(1);
+      suhuTerakhir = parseFloat(suhu);
+      const tempElem = document.getElementById("realtime-temperature");
+      if (tempElem) tempElem.textContent = suhu + " °C";
+    }
+    // Hilangkan alert jika ada data suhu
+    hideSuhuTimeoutAlert();
+    // Reset timer hanya jika tuning tidak aktif
+    if (!tuningActive) {
+      if (suhuTimeout) clearTimeout(suhuTimeout);
+      suhuTimeout = setTimeout(showSuhuTimeoutAlert, SUHU_TIMEOUT_MS);
+    }
+  });
+
+  resetIdleTimer();
+}
 
 function showSuhuTimeoutAlert() {
   if (!tuningActive) {
@@ -120,38 +173,7 @@ function updateStatus() {
   }
 }
 
-updateStatus();
 
-socket.on("connect", () => {
-  sudahKonek = true;
-  updateStatus();
-  console.log("Terhubung ke server Socket.IO, id:", socket.id);
-});
-
-socket.on("disconnect", () => {
-  sudahKonek = false;
-  updateStatus();
-  console.log("Terputus dari server Socket.IO");
-});
-
-let suhuTerakhir = null;
-
-socket.on("mqtt-temperature", function (data) {
-  let suhu = parseFloat(data.suhu);
-  if (!isNaN(suhu)) {
-    suhu = suhu.toFixed(1);
-    suhuTerakhir = parseFloat(suhu);
-    const tempElem = document.getElementById("realtime-temperature");
-    if (tempElem) tempElem.textContent = suhu + " °C";
-  }
-  // Hilangkan alert jika ada data suhu
-  hideSuhuTimeoutAlert();
-  // Reset timer hanya jika tuning tidak aktif
-  if (!tuningActive) {
-    if (suhuTimeout) clearTimeout(suhuTimeout);
-    suhuTimeout = setTimeout(showSuhuTimeoutAlert, SUHU_TIMEOUT_MS);
-  }
-});
 
 //deklarasi variabel dan tombol//
 const controlModeSelect = document.getElementById("mode");
@@ -853,7 +875,7 @@ window.addEventListener("pagehide", function () {
 // setInterval untuk mengirim heartbeat setiap 60 detik//
 setInterval(() => {
   fetch("/main/heartbeat", { method: "POST" });
-}, 5000); // 5 detik
+}, 1000); // 1 detik
 
 let idleTimeout = null;
 const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 menit
