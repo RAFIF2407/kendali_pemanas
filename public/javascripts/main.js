@@ -72,7 +72,7 @@ function showSuhuTimeoutAlert() {
       const alertDiv = document.createElement("div");
       alertDiv.id = "suhu-alert";
       alertDiv.className =
-        "alert alert-danger alert-dismissible fade show position-fixed top-0 end-0 m-3 p-auto";
+        "alert alert-danger alert-dismissible fade show position-fixed top-0 end-2 m-3 p-auto";
       alertDiv.role = "alert";
       alertDiv.style.zIndex = 1060;
       alertDiv.innerHTML = `
@@ -137,7 +137,7 @@ function showSocketConnectingAlert() {
     alertDiv = document.createElement("div");
     alertDiv.id = alertId;
     alertDiv.className =
-      "alert alert-danger alert-dismissible fade show position-fixed top-0 end-0 m-3 p-auto";
+      "alert alert-danger alert-dismissible fade show position-fixed top-0 end-2 m-3 p-auto";
     alertDiv.role = "alert";
     alertDiv.style.zIndex = 1060;
     alertDiv.innerHTML = `
