@@ -61,10 +61,12 @@ function setupSocketHandlers() {
       suhuTimeout = setTimeout(showSuhuTimeoutAlert, SUHU_TIMEOUT_MS);
     }
   });
-  
+
   socket.on("force_logout", (data) => {
-    alert(`You has been kickout: ${data.reason}`);
-    window.location.href = "/logout";
+    showBootstrapAlert(`You has been kickout: ${data.reason}`, 1000);
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 1000);
   });
   resetIdleTimer();
 }
