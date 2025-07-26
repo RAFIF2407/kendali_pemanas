@@ -61,14 +61,13 @@ function setupSocketHandlers() {
       suhuTimeout = setTimeout(showSuhuTimeoutAlert, SUHU_TIMEOUT_MS);
     }
   });
-
+  
+  socket.on("force_logout", (data) => {
+    alert(`You has been kickout: ${data.reason}`);
+    window.location.href = "/logout";
+  });
   resetIdleTimer();
 }
-
-socket.on("force_logout", (data) => {
-  alert(`You has been kickout: ${data.reason}`);
-  window.location.href = "/logout";
-});
 
 function showSuhuTimeoutAlert() {
   if (!tuningActive) {
