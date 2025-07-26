@@ -44,11 +44,28 @@ async function connectMQTT(io) {
 
       const pesan = message.toString().trim();
       if (topic === "suhu" && pesan === "kickout") {
-        const nim = getIdTuningForUser(nimSession) || nimSession;;
-        const socketId = socketModule.getSocketIdByNim(nim);
-        if (socketId && io) {
-          io.to(socketId).emit("force_logout", { reason: "Kickout by MQTT" });
-          console.log(`User NIM ${nim} dikickout via socket ${socketId}`);
+        try {
+          const result = await pool.query(
+            "SELECT nim FROM public.user WHERE is_logged_in = TRUE"
+          );
+          if (result.rows.length === 0) {
+            console.log("Tidak ada user aktif untuk dikickout");
+            return;
+          }
+          const nimAktif = result.rows[0].nim;
+          const socketId = socketModule.getSocketIdByNim(nimAktif);
+          if (socketId && io) {
+            io.to(socketId).emit("force_logout", {
+              reason: "Kickout by Teacher",
+            });
+            console.log(
+              `User NIM ${nimAktif} dikickout via socket ${socketId}`
+            );
+          } else {
+            console.log(`Socket untuk NIM ${nimAktif} tidak ditemukan`);
+          }
+        } catch (err) {
+          console.error("Error query kickout NIM:", err.message);
         }
         return;
       }
