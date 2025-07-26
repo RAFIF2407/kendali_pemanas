@@ -86,11 +86,11 @@
 
     <% if (typeof error !== 'undefined' && error) { %>
     <div
-      class="alert alert-danger alert-dismissible fade show position-absolute top-0 end-0 m-3 px-2 py-2 d-flex align-items-center"
+      class="alert alert-danger text-dark fade show position-absolute top-0 end-0 m-3 px-2 py-2 d-flex align-items-center"
       role="alert"
-      style="z-index: 1055; min-width: 220px; color: black"
+      style="z-index: 1055; min-width: 220px"
     >
-      <span><%= error %></span>
+      <span class="fw-bold"><%= error %></span>
       <button
         type="button"
         class="custom-btn-danger ms-1 px-1 py-1"

@@ -61,7 +61,7 @@ module.exports = function (db) {
           } else {
             return res.status(403).render("login", {
               title: "kendali_pemanas",
-              error: "The device is being used by ${user.nama}-${user.kelas}!",
+              error: `The device is being used by ${user.nama}-${user.kelas}!`,
             });
           }
         } else {
