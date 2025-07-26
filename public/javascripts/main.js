@@ -65,6 +65,11 @@ function setupSocketHandlers() {
   resetIdleTimer();
 }
 
+socket.on("force_logout", (data) => {
+  alert(`You has been kickout: ${data.reason}`);
+  window.location.href = "/logout";
+});
+
 function showSuhuTimeoutAlert() {
   if (!tuningActive) {
     // Cek jika alert sudah ada, jangan buat dobel

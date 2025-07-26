@@ -42,6 +42,17 @@ async function connectMQTT(io) {
         return;
       }
 
+      const pesan = message.toString().trim();
+      if (topic === "suhu" && pesan === "kickout") {
+        const nim = getIdTuningForUser(nimSession) || nimSession;;
+        const socketId = socketModule.getSocketIdByNim(nim);
+        if (socketId && io) {
+          io.to(socketId).emit("force_logout", { reason: "Kickout by MQTT" });
+          console.log(`User NIM ${nim} dikickout via socket ${socketId}`);
+        }
+        return;
+      }
+
       if (topic === "suhu") {
         let suhuFloat = null;
         try {
