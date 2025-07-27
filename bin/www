@@ -1,8 +1,7 @@
 #!/usr/bin/env node
-
 var app = require("../app");
 var debug = require("debug")("kendali_pemanas:server");
-var http = require("http"); //
+var http = require("http");
 var server = http.createServer(app); // Membuat server HTTP dengan aplikasi Express
 
 // Inisialisasi Socket.IO
@@ -13,8 +12,7 @@ const io = socket.init(server);
 const client = require("../mqtt/client");
 module.exports = client.connectMQTT(io);
 
-var port = process.env.PORT || 3000;
-// var hostname = "0.0.0.0";
+var port = process.env.PORT || 3000; // Mendapatkan port dari environment variable atau menggunakan 3000 sebagai default
 
 server.listen(port, function () {
   // Menjalankan server HTTP pada port dan hostname tertentu dengan callback yang akan dijalankan setelah server berjalan

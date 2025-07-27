@@ -2,40 +2,37 @@ let sudahKonek = false;
 let socketAlertTimeout = null;
 let alertCounter = 0;
 let suhuTimeout = null;
-const SUHU_TIMEOUT_MS = 5000; // 5 detik
+const SUHU_TIMEOUT_MS = 5000;
 let tuningActive = false;
 let tuningTimeout = null;
 let suhuTerakhir = null;
 
 (async function initApp() {
+  // Inisialisasi koneksi ke server Socket.IO dan cek session untuk menghindari redirect ke halaman login
   try {
-    const res = await fetch("/main/heartbeat", { method: "POST" });
+    const res = await fetch("/main/heartbeat", { method: "POST" }); // heartbeat untuk cek session
     if (res.status === 401 || res.redirected) {
       window.location.href = "/";
       return;
     }
-
-    // Koneksi ke server socket.io
+    // Inisialisasi koneksi Socket.IO dengan NIM dari session
     socket = io("https://pid-trainer.up.railway.app/", {
       query: { nim: String(window.myNim).trim() },
     });
-
-    // Setelah berhasil konek, jalankan semua event listener
     setupSocketHandlers();
   } catch (e) {
     console.error("Gagal cek session:", e);
     window.location.href = "/";
   }
 })();
-
 updateStatus();
 
 function setupSocketHandlers() {
+  // fungsi untuk setup koneksi Socket.IO
   socket.on("connect", () => {
     sudahKonek = true;
     updateStatus();
     console.log("Terhubung ke server Socket.IO, id:", socket.id);
-
     resetListener();
   });
 
@@ -46,6 +43,7 @@ function setupSocketHandlers() {
   });
 
   socket.on("mqtt-temperature", function (data) {
+    // fungsi untuk menerima data suhu melalui Socket.IO
     let suhu = parseFloat(data.suhu);
     if (!isNaN(suhu)) {
       suhu = suhu.toFixed(1);
@@ -53,17 +51,17 @@ function setupSocketHandlers() {
       const tempElem = document.getElementById("realtime-temperature");
       if (tempElem) tempElem.textContent = suhu + " °C";
     }
-    // Hilangkan alert jika ada data suhu
     hideSuhuTimeoutAlert();
-    // Reset timer hanya jika tuning tidak aktif
     if (!tuningActive) {
+      // Jika tidak dalam mode tuning, set timeout untuk suhu dan tampilkan alert jika tidak ada data suhu dalam waktu tertentu
       if (suhuTimeout) clearTimeout(suhuTimeout);
       suhuTimeout = setTimeout(showSuhuTimeoutAlert, SUHU_TIMEOUT_MS);
     }
   });
 
   socket.on("force_logout", (data) => {
-    showBootstrapAlert(`You has been kickout: ${data.reason}`, 1000);
+    // fungsi untuk menerima event force_logout dari server
+    showBootstrapAlert(`You has been kickout: ${data.reason}`, 600);
     setTimeout(() => {
       window.location.href = "/";
     }, 1000);
@@ -73,7 +71,6 @@ function setupSocketHandlers() {
 
 function showSuhuTimeoutAlert() {
   if (!tuningActive) {
-    // Cek jika alert sudah ada, jangan buat dobel
     if (!document.getElementById("suhu-alert")) {
       const alertDiv = document.createElement("div");
       alertDiv.id = "suhu-alert";
@@ -90,7 +87,6 @@ function showSuhuTimeoutAlert() {
   }
 }
 
-// Hilangkan alert jika data suhu sudah diterima lagi
 function hideSuhuTimeoutAlert() {
   const alertDiv = document.getElementById("suhu-alert");
   if (alertDiv) {
@@ -103,6 +99,7 @@ function hideSuhuTimeoutAlert() {
 }
 
 function showBootstrapAlert(message, timeout) {
+  // Fungsi untuk menampilkan alert Bootstrap dengan progress bar
   alertCounter++;
   const alertId = `bootstrap-alert-${alertCounter}`;
   const progressId = `alert-progress-${alertCounter}`;
@@ -135,7 +132,6 @@ function showBootstrapAlert(message, timeout) {
   }, timeout);
 }
 
-// Fungsi khusus untuk alert koneksi socket dengan spinner
 function showSocketConnectingAlert() {
   const alertId = "socket-connecting-alert";
   let alertDiv = document.getElementById(alertId);
@@ -165,6 +161,7 @@ function hideSocketConnectingAlert() {
 }
 
 function updateStatus() {
+  // Fungsi untuk memperbarui status koneksi Socket.IO jika sudah terhubung
   if (!sudahKonek) {
     if (socketAlertTimeout) clearTimeout(socketAlertTimeout);
     socketAlertTimeout = setTimeout(() => {
@@ -180,7 +177,7 @@ function updateStatus() {
   }
 }
 
-//deklarasi variabel dan tombol//
+//deklarasi variabel dan tombol
 const controlModeSelect = document.getElementById("mode");
 const inputFieldsDiv = document.getElementById("input-fields");
 const startButton = document.getElementById("start");
@@ -194,7 +191,7 @@ let waktuSamplingUser = null;
 let chart;
 let pollingActive = false;
 
-// Fungsi untuk mengambil data set point suhu dari server Socket.IO//
+// Fungsi untuk mengambil nilai set point dari input
 function getSetPoint() {
   return parseFloat(document.getElementById("sp")?.value) || null;
 }
@@ -205,13 +202,14 @@ function getTSPL() {
   return parseFloat(document.getElementById("set_point_bawah")?.value) || null;
 }
 
+// Inisialisasi format data csv untuk ekspor
 let csvKp = null;
 let csvKi = null;
 let csvKd = null;
 let currentMode = null;
 
-// Fungsi untuk mengambil data output terbaru dari server Socket.IO//
 async function fetchCurrentOutputData() {
+  // Fungsi untuk mengambil data output saat ini dari server Socket.IO
   try {
     if (!chart) initializeChart();
     clearChart();
@@ -219,7 +217,6 @@ async function fetchCurrentOutputData() {
     const response = await fetch("/main/get-output");
     if (!response.ok) throw new Error("Gagal mengambil data output");
     const data = await response.json();
-
     data.forEach((row) => {
       // Jika 0 atau null, jadikan null supaya tidak digambar garisnya
       const setPoint =
@@ -232,7 +229,6 @@ async function fetchCurrentOutputData() {
         row.set_point_bawah && row.set_point_bawah !== 0
           ? row.set_point_bawah
           : null;
-
       updateChart(row.time, row.suhu, setPoint, tspH, tspL);
       allData.push({
         Time: row.time,
@@ -240,8 +236,8 @@ async function fetchCurrentOutputData() {
         SetPoint: setPoint,
         TSPH: tspH,
         TSPL: tspL,
-        Kp: row.kp, // tambahkan
-        Ki: row.ki, // tambahkan
+        Kp: row.kp,
+        Ki: row.ki,
         Kd: row.kd,
         mode: row.mode,
       });
@@ -255,8 +251,8 @@ async function fetchCurrentOutputData() {
   }
 }
 
-// Fungsi untuk mengambil data output lama dari server Socket.IO//
 async function fetchOldOutputData() {
+  // Fungsi untuk mengambil data output satu sesi sebelumnya dari server Socket.IO
   try {
     if (!chart) initializeChart();
     clearChart();
@@ -265,9 +261,7 @@ async function fetchOldOutputData() {
     const response = await fetch("/main/get-old-output");
     if (!response.ok) throw new Error("Gagal mengambil data output lama");
     const data = await response.json();
-
     data.forEach((row) => {
-      // Jika 0 atau null, jadikan null supaya tidak digambar garisnya
       const setPoint =
         row.set_point && row.set_point !== 0 ? row.set_point : null;
       const tspH =
@@ -286,8 +280,8 @@ async function fetchOldOutputData() {
         SetPoint: setPoint,
         TSPH: tspH,
         TSPL: tspL,
-        Kp: row.kp, // tambahkan
-        Ki: row.ki, // tambahkan
+        Kp: row.kp,
+        Ki: row.ki,
         Kd: row.kd,
         mode: row.mode,
       });
@@ -301,8 +295,8 @@ async function fetchOldOutputData() {
   }
 }
 
-// fungsi untuk menghapus nilai pada grafik//
 function resetListener() {
+  // Fungsi untuk mengatur ulang listener pada socket
   socket.off("new_suhu");
   socket.on("new_suhu", function (newData) {
     if (
@@ -329,17 +323,15 @@ function resetListener() {
         mode: currentMode,
       });
       console.log("Data diterima:", newData.time);
-
       if (waktuSamplingUser && newData.time >= waktuSamplingUser) {
         pollingActive = false;
-        // socket.off("new_suhu");
       }
     }
   });
 }
 
-// --- Event Handler DOM--- //
 document.addEventListener("DOMContentLoaded", function () {
+  // Fungsi untuk inisialisasi event listener untuk tombol dan elemen lainnya
   const exportCsvBtn = document.getElementById("exportcsv");
   if (exportCsvBtn) {
     exportCsvBtn.replaceWith(exportCsvBtn.cloneNode(true));
@@ -362,7 +354,6 @@ document.addEventListener("DOMContentLoaded", function () {
       sidebar.classList.toggle("open");
       overlay.classList.toggle("show");
     });
-
   document.getElementById("overlay").addEventListener("click", function () {
     sidebar.classList.remove("open");
     overlay.classList.remove("show");
@@ -379,6 +370,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   async function prefillPID() {
+    // Fungsi untuk mengisi nilai default pada input PID dari data terakhir
     try {
       const res = await fetch("/main/prefill-variabel");
       if (!res.ok) throw new Error(res.status);
@@ -405,35 +397,31 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
-// Setelah elemen input dibuat (misal setelah controlModeSelect change)
 function addTSPLTSPHValidation() {
+  // Fungsi untuk menambahkan validasi pada input TSPL dan TSPH
   const tsplInput = document.getElementById("set_point_bawah");
   const tsphInput = document.getElementById("set_point_atas");
   if (!tsplInput || !tsphInput) return;
-
-  // Saat TSPL diubah
   tsplInput.addEventListener("input", function () {
     const tspl = parseFloat(tsplInput.value);
     const tsph = parseFloat(tsphInput.value);
     if (!isNaN(tspl) && !isNaN(tsph) && tspl > tsph) {
-      tsplInput.value = tsph; // Set TSPL sama dengan TSPH jika lebih besar
+      tsplInput.value = tsph;
       alert("⚠️ TSPL cannot be higher than TSPH!");
     }
   });
-
-  // Saat TSPH diubah
   tsphInput.addEventListener("input", function () {
     const tspl = parseFloat(tsplInput.value);
     const tsph = parseFloat(tsphInput.value);
     if (!isNaN(tspl) && !isNaN(tsph) && tspl > tsph) {
-      tsphInput.value = tspl; // Set TSPH sama dengan TSPL jika lebih kecil
+      tsphInput.value = tspl;
       alert("⚠️ TSPH cannot be lower than TSPL!");
     }
   });
 }
 
-// memilih mode kontrol kendali//
 controlModeSelect.addEventListener("change", function () {
+  // Fungsi untuk mengubah input field sesuai dengan mode kontrol yang dipilih
   inputFieldsDiv.innerHTML = "";
 
   switch (this.value) {
@@ -454,7 +442,6 @@ controlModeSelect.addEventListener("change", function () {
                 </div>`;
       addTSPLTSPHValidation();
       break;
-
     case "pid":
       inputFieldsDiv.innerHTML = ` 
                 <div class="container-fluid mx-auto">
@@ -485,8 +472,8 @@ controlModeSelect.addEventListener("change", function () {
   }
 });
 
-// listener tombol start//
 startButton.addEventListener("click", async function (event) {
+  // listener tombol start untuk memulai tuning
   event.preventDefault();
 
   if (suhuTerakhir !== null && suhuTerakhir >= 35.0) {
@@ -503,8 +490,7 @@ startButton.addEventListener("click", async function (event) {
   }
 
   tuningActive = true;
-  if (suhuTimeout) clearTimeout(suhuTimeout); // matikan timer suhu
-
+  if (suhuTimeout) clearTimeout(suhuTimeout); // Hentikan timeout jika suhu sudah diterima
   if (controlModeSelect.value === "Choice Mode") {
     alert("⚠️ Please select the control mode before starting!");
     return;
@@ -513,7 +499,6 @@ startButton.addEventListener("click", async function (event) {
   const mode = controlModeSelect.value;
   const time =
     parseFloat(document.getElementById("time_sampling").value) || null;
-
   const sp = parseFloat(document.getElementById("sp")?.value) || null;
   const tsph =
     parseFloat(document.getElementById("set_point_atas")?.value) || null;
@@ -542,10 +527,9 @@ startButton.addEventListener("click", async function (event) {
     kd: kd,
     id_tuning: id_tuning,
   };
-
   console.log(data);
 
-  // Mengirim data ke beckend menggunakan fetch API (POST) //
+  // Mengirim data ke beckend menggunakan fetch API (POST)
   fetch("main/data", {
     method: "POST",
     headers: {
@@ -578,30 +562,27 @@ startButton.addEventListener("click", async function (event) {
     });
 
   pollingActive = true;
-
   if (!chart) {
     initializeChart();
   }
   clearChart();
   allData = [];
   resetListener();
-  // Set timer tuning selesai otomatis
   if (tuningTimeout) clearTimeout(tuningTimeout);
   if (waktuSamplingUser) {
+    // Set timeout untuk menghentikan tuning setelah proses selesai
     tuningTimeout = setTimeout(() => {
       tuningActive = false;
-      // Aktifkan kembali timer suhu
       if (suhuTimeout) clearTimeout(suhuTimeout);
       suhuTimeout = setTimeout(showSuhuTimeoutAlert, SUHU_TIMEOUT_MS);
     }, (waktuSamplingUser - 0.1) * 1000); // waktu tuning dikurangi 0.1 detik
   }
 });
 
-// listener tombol stop//
 stopButton.addEventListener("click", function () {
+  // listener tombol stop untuk menghentikan tuning
   socket.off("new_suhu");
   console.log("socket terputus");
-
   pollingActive = false;
   console.log("Kontrol dihentikan");
 
@@ -611,24 +592,22 @@ stopButton.addEventListener("click", function () {
   })
     .then((res) => console.log("Stop command sent to backend"))
     .catch((err) => console.error("Failed to send stop command", err));
-
   console.log("Kontrol dihentikan");
   alert("⚠️ Tuning stopped!");
 
   tuningActive = false;
   if (tuningTimeout) clearTimeout(tuningTimeout);
-  // Aktifkan kembali timer suhu
   if (suhuTimeout) clearTimeout(suhuTimeout);
   suhuTimeout = setTimeout(showSuhuTimeoutAlert, SUHU_TIMEOUT_MS);
 });
 
-// listener tombol clear//
 clearButton.addEventListener("click", function () {
+  // listener tombol clear untuk menghapus grafik
   clearChart();
 });
 
-//fungsi inisialisasi grafik//
 function initializeChart() {
+  // fungsi untuk inisialisasi grafik menggunakan Chart.js
   const ctx = document.getElementById("realTimeChart").getContext("2d");
   chart = new Chart(ctx, {
     type: "line",
@@ -679,9 +658,9 @@ function initializeChart() {
         legend: {
           labels: {
             font: {
-              weight: "bolder", // <-- label legend lebih tebal
+              weight: "bolder",
             },
-            color: "black", // <-- label legend berwarna hitam
+            color: "black",
           },
         },
       },
@@ -710,8 +689,8 @@ function initializeChart() {
   });
 }
 
-//fungsi update grafik//
 function updateChart(time, suhu, setPoint, tspH, tspL) {
+  // fungsi untuk memperbarui grafik dengan data terbaru
   console.log("updateChart:", time, suhu, setPoint, tspH, tspL);
   chart.data.labels.push(time);
   chart.data.datasets[0].data.push(suhu);
@@ -721,8 +700,8 @@ function updateChart(time, suhu, setPoint, tspH, tspL) {
   chart.update();
 }
 
-//fungsi hapus grafik//
 function clearChart() {
+  // fungsi untuk menghapus grafik
   allData = [];
   chart.data.labels = [];
   chart.data.datasets[0].data = [];
@@ -735,10 +714,10 @@ function clearChart() {
 
 function exportToCSV() {
   console.log("Jumlah data:", allData.length);
-  if (allData.length === 0) return; // Tidak ada data untuk diekspor, kembalikan awal fungsi tanpa ekspor CSV atau alert //
+  if (allData.length === 0) return; // Tidak ada data di tampilkan, maka tidak perlu ekspor CSV
   console.log("❗ allData kosong, CSV tidak dibuat.");
 
-  // Kelompokkan data berdasarkan mode yang benar
+  // Kelompokkan data berdasarkan mode kontrol
   const modeGroups = {};
   allData.forEach((row) => {
     const mode = row.mode || "unknown";
@@ -753,7 +732,7 @@ function exportToCSV() {
     let csvHeader = "";
     let csvContent = "";
     let pidParams = "";
-    // Ambil nilai sp dari baris pertama (jika ada)
+    // Ambil nilai variabel dari baris pertama untuk nama file
     if (rows.length > 0) {
       if (mode === "satuposisi" || mode === "pid") {
         sp = rows[0].SetPoint ?? "";
@@ -761,19 +740,16 @@ function exportToCSV() {
         sp = `${rows[0].TSPL ?? ""}-${rows[0].TSPH ?? ""}`;
       }
     }
-
     if (mode === "pid") {
-      // Ambil nilai Kp, Ki, Kd dari baris pertama
       const kp = rows[0].Kp ?? "";
       const ki = rows[0].Ki ?? "";
       const kd = rows[0].Kd ?? "";
-      // Susun string parameter sesuai yang diisi
       if (kp !== "" && kp !== null && kp !== undefined) pidParams += `-kp${kp}`;
       if (kd !== "" && kd !== null && kd !== undefined) pidParams += `-kd${kd}`;
       if (ki !== "" && ki !== null && ki !== undefined) pidParams += `-ki${ki}`;
     }
 
-    // Pilihan header dan kolom per mode
+    // Pilihan header dan kolom CSV berdasarkan mode
     if (mode === "satuposisi") {
       csvHeader = "Time (s), Set Point, TA\n";
       rows.forEach((row) => {
@@ -794,7 +770,7 @@ function exportToCSV() {
         }, ${row.Ki ?? ""}, ${row.Kd ?? ""}\n`;
       });
     } else {
-      // Default: ekspor semua kolom (fallback)
+      // Mode tidak dikenal, gunakan format default
       csvHeader = "Time (s), Set Point, TSPH, TSPL, TA, Kp, Ki, Kd\n";
       rows.forEach((row) => {
         csvContent += `${row.Time}, ${row.SetPoint ?? ""}, ${row.TSPH ?? ""}, ${
@@ -806,10 +782,10 @@ function exportToCSV() {
     }
 
     const blob = new Blob([csvHeader + csvContent], {
+      // Membuat Blob dari data CSV
       type: "text/csv;charset=utf-8;",
     });
     const link = document.createElement("a");
-    // const url = URL.createObjectURL(blob);
     link.setAttribute("href", URL.createObjectURL(blob));
     if (mode === "pid") {
       link.setAttribute("download", `data-${sp}-pid${pidParams}.csv`);
@@ -824,6 +800,7 @@ function exportToCSV() {
 }
 
 function showConfirmationModal(message) {
+  // Fungsi untuk menampilkan modal konfirmasi sesuai dengan pesan yang diberikan
   return new Promise((resolve) => {
     const modalBackdrop = document.createElement("div");
     modalBackdrop.className = "modal-backdrop fade show";
@@ -858,7 +835,6 @@ function showConfirmationModal(message) {
       modal.remove();
       resolve(true);
     });
-
     document.getElementById("btnDenied").addEventListener("click", () => {
       modalBackdrop.remove();
       modal.remove();
@@ -867,30 +843,30 @@ function showConfirmationModal(message) {
   });
 }
 
-// Auto logout saat tab/browser ditutup (desktop & mobile)
 window.addEventListener("pagehide", function () {
-  // Pastikan logout ke server tetap dikirim walau tab ditutup
+  // Event listener untuk menangani pagehide atau ketika halaman ditutup
   navigator.sendBeacon("/logout");
-  // Optional: disconnect socket (tidak wajib, karena tab akan tertutup)
   try {
     socket.disconnect();
   } catch (e) {}
 });
 
-// setInterval untuk mengirim heartbeat setiap 60 detik//
 setInterval(() => {
+  // Mengirim heartbeat setiap 1 detik untuk menjaga session tetap aktif
   fetch("/main/heartbeat", { method: "POST" });
-}, 1000); // 1 detik
+}, 1000);
 
 let idleTimeout = null;
 const AUTO_LOGOUT_TIME = 15 * 60 * 1000; // 15 menit
 
 function resetIdleTimer() {
+  // Fungsi untuk mereset timer idle
   if (idleTimeout) clearTimeout(idleTimeout);
   idleTimeout = setTimeout(autoLogout, AUTO_LOGOUT_TIME);
 }
 
 function autoLogout() {
+  // Fungsi untuk melakukan logout otomatis setelah waktu idle habis
   showBootstrapAlert("Session expired due to inactivity. Logging out...", 1700);
   setTimeout(async () => {
     await socket.disconnect();
@@ -899,8 +875,6 @@ function autoLogout() {
     window.location.href = "/";
   }, 2000);
 }
-
-// Pantau aktivitas user
 [
   "mousemove",
   "keydown",
@@ -913,27 +887,25 @@ function autoLogout() {
 });
 resetIdleTimer();
 
-//listener tombol logout//
 logoutButton.addEventListener("click", async () => {
+  // Listener tombol logout untuk mengakhiri sesi
   await socket.disconnect();
   console.log("socket terputus");
   const response = await fetch("/logout", {
     method: "POST",
     credentials: "include",
   });
-
   if (response.redirected) {
     window.location.href = response.url;
   }
 });
 
-// Cek session ke server saat tab kembali aktif (misal setelah freeze di mobile)
 document.addEventListener("visibilitychange", async function () {
+  // listener untuk menangani perubahan visibilitas halaman
   if (document.visibilityState === "visible") {
-    // Cek session ke server
     const res = await fetch("/main/heartbeat", { method: "POST" });
     if (res.status === 401 || res.redirected) {
-      // Jika session expired, redirect ke login
+      // Jika session sudah tidak valid, redirect ke halaman login
       window.location.href = "/";
     }
   }

@@ -1,55 +1,50 @@
-// Import library dan modul yang diperlukan dari server socket io//
 const { Server } = require("socket.io");
-
-// Deklarasi variabel untuk menyimpan data yang dikirim dari frontend//
-let io; 
+// Inisialisasi variabel io, nimToSocketId, dan missedData untuk menyimpan data socket dan backlog
+let io;
 const nimToSocketId = new Map();
 const missedData = new Map();
 
 module.exports = {
-  // Fungsi untuk mendapatkan ID socket berdasarkan NIM//
   init: (server) => {
     if (!io) {
       io = new Server(server, {
-        cors: { origin: "*", methods: ["GET", "POST"] }, // Mengatur opsi cors untuk Socket.IO dengan opsi cors dan metode yang diizinkan
+        cors: { origin: "*", methods: ["GET", "POST"] }, // Konfigurasi CORS untuk Socket.IO
       });
-      // metode untuk  "connection" pada Socket.IO//
       io.on("connection", (socket) => {
-        // Ambil NIM dari query (frontend harus kirim NIM)//
         const nim = String(socket.handshake.query.nim).trim();
         console.log("NIM frontend connect:", nim);
         if (nim) {
+          // Jika NIM dari frontend ada, simpan ke Map nimToSocketId
           nimToSocketId.set(String(nim).trim(), socket.id);
           socket.nim = nim;
           console.log("User dengan NIM", nim, "terhubung dengan", socket.id);
-
           if (missedData.has(nim)) {
             missedData
               .get(nim)
-              .forEach((payload) => io.to(socket.id).emit("new_suhu", payload));
+              .forEach((payload) => io.to(socket.id).emit("new_suhu", payload)); // Kirim backlog data jika ada
             missedData.delete(nim);
             console.log(`Backlog data dikirim ke NIM ${nim}`);
           }
         }
         socket.on("disconnect", () => {
+          // Saat socket terputus, hapus dari Map nimToSocketId
           if (socket.nim) nimToSocketId.delete(socket.nim);
         });
       });
     }
     return io;
   },
-  // Metode getIO untuk mendapatkan instance Socket.IO yang telah diinisialisasi//
+  // Fungsi untuk mendapatkan instance Socket.IO
   getIO: () => {
     if (!io) throw new Error("Socket.io not initialized!");
     return io;
   },
-
-  //--mengambil NIM untuk data diri user--//
+  // Fungsi untuk mendapatkan client MQTT atau nim yang terhubung dengan socket
   getSocketIdByNim: (nim) => {
     return nimToSocketId.get(String(nim).trim());
   },
 
-  // fungsi untuk menyimpan data jika user belum connect ke server socket.io//
+  // fungsi untuk menyimpan data jika user belum connect ke server socket.io
   saveMissedData: (nim, payload) => {
     if (!missedData.has(String(nim).trim()))
       missedData.set(String(nim).trim(), []);

@@ -1,4 +1,3 @@
-// Import library MQTT//
 var mqtt = require("async-mqtt");
 const { pool } = require("../helpers/util");
 
@@ -12,21 +11,18 @@ const options = {
 
 let mqttClient;
 let receivedData = null;
-
 const socketModule = require("../mqtt/socket.js");
+const idTuningUser = {}; // Menyimpan idTuning untuk setiap user berdasarkan NIM
 
-// --- Penampung idTuningBaru untuk setiap NIM ---
-const idTuningUser = {}; // key: nim, value: idTuningBaru
-
-// Endpoint/setter ini perlu dipanggil saat user mulai tuning baru (misal dari route POST /main/data)
 function setIdTuningForUser(nim, idTuningBaru) {
+  // Fungsi untuk menyimpan idTuning untuk user tertentu
   idTuningUser[nim] = idTuningBaru;
 }
 function getIdTuningForUser(nim) {
   return idTuningUser[nim];
 }
 
-// Fungsi untuk menghubungkan ke broker MQTT//
+// Fungsi untuk menghubungkan ke topik MQTT dan menangani pesan masuk//
 async function connectMQTT(io) {
   try {
     mqttClient = await mqtt.connectAsync(brokerUrl, options);
@@ -38,12 +34,14 @@ async function connectMQTT(io) {
 
     mqttClient.on("message", async (topic, message, packet) => {
       if (packet && packet.retain) {
+        // Cek apakah pesan adalah retained message
         console.log("Ignored retained message:", message.toString());
         return;
       }
 
       const pesan = message.toString().trim();
       if (topic === "suhu" && pesan === "kickout") {
+        // jika menerima pesan kickout maka user aktif akan di logout paksa
         try {
           const result = await pool.query(
             "SELECT nim FROM public.user WHERE is_logged_in = TRUE"
@@ -56,6 +54,7 @@ async function connectMQTT(io) {
           const socketId = socketModule.getSocketIdByNim(nimAktif);
           if (socketId && io) {
             io.to(socketId).emit("force_logout", {
+              // Emit event ke frontend untuk logout paksa
               reason: "Kickout by Teacher",
             });
             console.log(
@@ -71,6 +70,7 @@ async function connectMQTT(io) {
       }
 
       if (topic === "suhu") {
+        // Jika topik adalah suhu, parse data suhu dan emit ke frontend untuk monitoring
         let suhuFloat = null;
         try {
           const parsed = JSON.parse(message.toString());
@@ -86,6 +86,7 @@ async function connectMQTT(io) {
       }
 
       if (topic === "feedback") {
+        // topik feedback untuk menerima data output suhu
         const rawMessage = message.toString();
         if (!rawMessage.trim()) {
           console.error("Received empty MQTT message, ignoring.");
@@ -93,7 +94,6 @@ async function connectMQTT(io) {
         }
         console.log("Raw message received:", rawMessage);
         let suhu, nim, time;
-
         try {
           const parsed = JSON.parse(rawMessage);
           nim = String(parsed.NIM).trim();
@@ -117,21 +117,16 @@ async function connectMQTT(io) {
           console.error("Error parsing MQTT message:", err.message);
           return;
         }
-
         console.log("Received MQTT:", suhu, nim, time);
-        console.log("NIM MQTT:", nim);
-
         if (!time) {
           console.error("time not found in message.");
           return;
         }
-
         if (!nim) {
           console.error("NIM not found in message.");
           return;
         }
 
-        // --- Ambil idTuningBaru yang aktif untuk NIM ini ---
         const idTuningBaru = getIdTuningForUser(nim);
         if (!idTuningBaru) {
           console.error(
@@ -139,8 +134,8 @@ async function connectMQTT(io) {
           );
           return;
         }
-
         if (!isNaN(suhu)) {
+          // Pastikan suhu adalah angka
           try {
             await insertOutputWithSetpoint(nim, suhu, time, idTuningBaru);
             console.log(
@@ -155,12 +150,13 @@ async function connectMQTT(io) {
         }
 
         if (io) {
+          // Jika ada koneksi Socket.IO, emit data suhu ke frontend
           const socketId = socketModule.getSocketIdByNim(nim);
           if (socketId) {
             io.to(socketId).emit("new_suhu", { time, suhu, NIM: nim });
             console.log(`Emit ke NIM ${nim} (socket ${socketId})`);
           } else {
-            socketModule.saveMissedData(nim, { time, suhu, NIM: nim });
+            socketModule.saveMissedData(nim, { time, suhu, NIM: nim }); // Simpan data yang tidak bisa diemit karena socket belum terdaftar
             console.log(`Socket user NIM ${nim} belum terdaftar`);
           }
         }
@@ -171,8 +167,8 @@ async function connectMQTT(io) {
   }
 }
 
-// Fungsi untuk mengirim data ke broker MQTT untuk backup jika ingin mengambil data lama//
 async function backupAndClearOutputCurrent(nim, idTuningLama) {
+  // Fungsi untuk backup data output saat ini ke tabel outputold dan menghapusnya dari outputcurrent
   try {
     await pool.query(`DELETE FROM public.outputold WHERE nim = $1`, [nim]);
 
@@ -191,7 +187,7 @@ async function backupAndClearOutputCurrent(nim, idTuningLama) {
 }
 
 async function insertOutputWithSetpoint(nim, suhu, time, idTuningBaru) {
-  // 1. Ambil data setpoint
+  // Fungsi untuk memasukkan data output saat ini ke tabel outputcurrent dengan setpoint dari variabel
   const { rows } = await pool.query(
     "SELECT set_point, set_point_atas, set_point_bawah, kp, ki, kd, mode FROM variabel WHERE nim = $1",
     [nim]
@@ -200,8 +196,6 @@ async function insertOutputWithSetpoint(nim, suhu, time, idTuningBaru) {
 
   const { set_point, set_point_atas, set_point_bawah, kp, ki, kd, mode } =
     rows[0];
-
-  // 2. Insert ke outputcurrent
   await pool.query(
     `INSERT INTO public.outputcurrent
       (suhu, nim, time, id_tuning, set_point, set_point_atas, set_point_bawah, kp, ki, kd, mode)
@@ -222,7 +216,7 @@ async function insertOutputWithSetpoint(nim, suhu, time, idTuningBaru) {
   );
 }
 
-// Fungsi untuk mencoba koneksi kembali jika terjadi kesalahan//
+// Fungsi untuk mencoba koneksi kembali jika terjadi kesalahan
 async function reconnectMQTT(io) {
   try {
     await connectMQTT(io);
@@ -232,7 +226,7 @@ async function reconnectMQTT(io) {
   }
 }
 
-// Fungsi untuk memutuskan koneksi MQTT//
+// Fungsi untuk memutuskan koneksi MQTT
 async function disconnectMQTT() {
   if (mqttClient && mqttClient.end) {
     try {
@@ -244,7 +238,7 @@ async function disconnectMQTT() {
   }
 }
 
-// Fungsi untuk mengirim perintah STOP ke broker MQTT//
+// Fungsi untuk mengirim perintah STOP ke broker MQTT
 async function publishStop() {
   if (mqttClient) {
     try {
@@ -261,7 +255,7 @@ async function publishStop() {
   }
 }
 
-// Ekspor fungsi-fungsi untuk digunakan di modul lain//
+// Ekspor fungsi-fungsi untuk digunakan di modul lain
 module.exports = {
   connectMQTT,
   disconnectMQTT,
@@ -270,7 +264,7 @@ module.exports = {
   getClient: () => mqttClient,
   getReceivedData: () => receivedData,
   publishStop,
-  setIdTuningForUser, // <-- eksport setter untuk dipakai di route /main/data
+  setIdTuningForUser,
   getIdTuningForUser,
   insertOutputWithSetpoint,
 };

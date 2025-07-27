@@ -1,8 +1,7 @@
-// helpers/util.js
 const { Pool } = require("pg");
-require("dotenv").config();
+require("dotenv").config(); // Memuat variabel dari file .env untuk konfigurasi database
 
-const pool = new Pool(
+const pool = new Pool( // Konfigurasi koneksi ke database PostgreSQL
   process.env.DB_URL
     ? {
         connectionString: process.env.DB_URL,
@@ -17,7 +16,7 @@ const pool = new Pool(
       }
 );
 
-class Response {
+class Response { // Kelas untuk membungkus response dari database
   constructor(data, success = true) {
     this.success = success;
     this.data = data;

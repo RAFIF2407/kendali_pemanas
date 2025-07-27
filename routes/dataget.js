@@ -1,8 +1,7 @@
 var express = require("express");
-var router = express.Router(); // Router untuk Express
+var router = express.Router();
 
 module.exports = function (db) {
-  /* GET pengguna di dalam tabel users. */
   router.get("/users", function (req, res, next) {
     db.query(
       "SELECT * FROM public.user ORDER BY GREATEST(created_at, updated_at) DESC LIMIT 1",
@@ -11,9 +10,8 @@ module.exports = function (db) {
           console.error("Database error:", err);
           return res.status(500).send("Database query error");
         }
-
-        console.log(result.rows.length); // Log jumlah hasil
-        res.json(result.rows[0]); // Kirim hasil ke client
+        console.log(result.rows.length);
+        res.json(result.rows[0]);
       }
     );
   });
@@ -40,7 +38,7 @@ module.exports = function (db) {
       `;
       const result = await db.query(query);
       console.log("Data variabel dengan user:", result.rows);
-      res.json(result.rows[0]); // Kembalikan baris pertama
+      res.json(result.rows[0]);
     } catch (err) {
       console.error("Database error:", err.stack);
       res
@@ -60,7 +58,7 @@ module.exports = function (db) {
 
         console.log("Jumlah baris:", result.rows.length);
         if (result.rows.length > 0) {
-          return res.json(result.rows); // Kirim semua hasil
+          return res.json(result.rows);
         } else {
           return res.status(404).json({ message: "Data not found" });
         }
@@ -68,5 +66,5 @@ module.exports = function (db) {
     );
   });
 
-  return router; // Kembalikan router
+  return router;
 };

@@ -4,20 +4,19 @@ var mqttClientModule = require("../mqtt/client");
 
 module.exports = function (db) {
   function requireLogin(req, res, next) {
+    // Middleware untuk memastikan user sudah login
     if (!req.session.user) {
       return res.redirect("/");
     }
     next();
   }
 
-  //routes ke halaman utama//
   router.get("/", requireLogin, function (req, res, next) {
     console.log("Session data:", req.session);
-    res.set("Cache-Control", "no-store");
-    return res.render("main", { user: req.session.user });
+    res.set("Cache-Control", "no-store"); // Set cache control untuk mencegah caching
+    return res.render("main", { user: req.session.user }); // Render halaman utama dengan data user dari session
   });
 
-  //routes variabel input//
   router.post("/data", requireLogin, async function (req, res, next) {
     if (!req.session.user) {
       return res.status(401).json({ error: "User not authenticated" });
@@ -27,7 +26,7 @@ module.exports = function (db) {
         return 0.0;
       }
       const num = parseFloat(value);
-      return isNaN(num) ? 0.0 : num;
+      return isNaN(num) ? 0.0 : num; // Mengembalikan 0.0 jika parsing gagal
     };
 
     const {
@@ -55,7 +54,6 @@ module.exports = function (db) {
     }
 
     const nim = req.session.user.nim;
-
     const userCheck = await db.query(
       "SELECT 1 FROM public.user WHERE nim = $1",
       [nim]
@@ -66,20 +64,17 @@ module.exports = function (db) {
         .json({ error: "NIM tidak ditemukan di database." });
     }
 
-    // 1. Ambil id_tuning lama sebelum reset
     const lastTuning = await db.query(
+      // Ambil id_tuning terakhir untuk NIM yang sedang aktif
       "SELECT id_tuning FROM outputcurrent WHERE nim = $1 ORDER BY time DESC LIMIT 1",
       [nim]
     );
     const idTuningLama =
-      lastTuning.rows.length > 0 ? lastTuning.rows[0].id_tuning : null;
-
+      lastTuning.rows.length > 0 ? lastTuning.rows[0].id_tuning : null; // Ambil id_tuning lama jika ada, jika tidak ada maka null
     if (idTuningLama) {
       await mqttClientModule.backupAndClearOutputCurrent(nim, idTuningLama);
     }
-
-    //import modul mqtt client data dan backup//
-    await mqttClientModule.setIdTuningForUser(nim, id_tuning);
+    await mqttClientModule.setIdTuningForUser(nim, id_tuning); // Set id_tuning untuk user yang sedang aktif
 
     const values = [
       validatedSetPoint,
@@ -92,13 +87,13 @@ module.exports = function (db) {
       validatedSetPointBawah,
       nim,
     ];
-
     try {
       const checkVar = await db.query(
         "SELECT 1 FROM public.variabel WHERE nim = $1",
         [nim]
       );
       if (checkVar.rows.length > 0) {
+        // Jika data variabel sudah ada, lakukan update data dengan nim yang sesuai
         const updateQuery = `
           UPDATE public.variabel
           SET set_point = $1, kp = $2, ki = $3, kd = $4, time_sampling = $5, mode = $6, set_point_atas = $7, set_point_bawah = $8
@@ -116,7 +111,7 @@ module.exports = function (db) {
           INSERT INTO public.variabel (set_point, kp, ki, kd, time_sampling, mode, set_point_atas, set_point_bawah, nim)
           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
           RETURNING *
-        `;
+        `; // Jika data variabel belum ada, lakukan insert data baru
         await db.query(insertQuery, values);
         res.status(200).json({ message: "Data inserted successfully" });
         console.log("Data inserted successfully");
@@ -128,7 +123,6 @@ module.exports = function (db) {
         .json({ error: "Database query error", details: err.message });
     }
 
-    // Pengiriman ke MQTT
     const dataToSend = {
       Sp: validatedSetPoint,
       Kp: validatedKp,
@@ -139,8 +133,7 @@ module.exports = function (db) {
       TSPH: validatedSetPointAtas,
       TSPL: validatedSetPointBawah,
       NIM: nim,
-    };
-
+    }; // Data yang akan dikirim ke broker MQTT
     try {
       await mqttClientModule.backupAndClearOutputCurrent(nim);
       console.log("Backup feedback sukses untuk NIM:", nim);
@@ -148,7 +141,7 @@ module.exports = function (db) {
       console.error("Error backup feedback:", err.message);
     }
 
-    const mqttClient = mqttClientModule.getClient();
+    const mqttClient = mqttClientModule.getClient(); // Ambil client MQTT yang sudah terhubung dari module mqtt/client.js
     if (mqttClient) {
       try {
         await mqttClient.publish("input", JSON.stringify(dataToSend));
@@ -161,8 +154,8 @@ module.exports = function (db) {
     }
   });
 
-  //routes mengambil data output baru//
   router.get("/get-output", requireLogin, async function (req, res, next) {
+    // routes mengambil data output saat ini untuk ditampilkan di grafik
     const nim = req.session.user.nim;
     try {
       const result = await db.query(
@@ -181,8 +174,8 @@ module.exports = function (db) {
     }
   });
 
-  //routes mengambil data output lama untuk dijadikan grafik//
   router.get("/get-old-output", requireLogin, async function (req, res, next) {
+    // routes mengambil data output satu sesi sebelumnya untuk ditampilkan di grafik
     const nim = req.session.user.nim;
     try {
       const result = await db.query(
@@ -199,24 +192,25 @@ module.exports = function (db) {
         .json({ error: "Database query error", details: err.message });
     }
   });
-router.get("/prefill-variabel", requireLogin, async (req, res) => {
-  const nim = req.session.user.nim;
-  try {
-    const { rows } = await db.query(
-      `SELECT kp, ki, kd, set_point FROM public.variabel
-       WHERE nim = $1 ORDER BY updated_at DESC LIMIT 1`,
-      [nim]
-    );
-    res.json(rows[0] || { kp: null, ki: null, kd: null, set_point: null });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Database query error" });
-  }
-});
 
+  router.get("/prefill-variabel", requireLogin, async (req, res) => {
+    // routes untuk mengambil data variabel mode PID yang diinputkan user
+    const nim = req.session.user.nim;
+    try {
+      const { rows } = await db.query(
+        `SELECT kp, ki, kd, set_point FROM public.variabel
+        WHERE nim = $1 ORDER BY updated_at DESC LIMIT 1`,
+        [nim]
+      );
+      res.json(rows[0] || { kp: null, ki: null, kd: null, set_point: null }); // Mengembalikan nilai kosong jika tidak ada data di database
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Database query error" });
+    }
+  });
 
-  //routes untuk sesi user proses tuning berjalan//
   router.post("/heartbeat", function (req, res) {
+    // routes untuk menjaga agar session tetap aktif saat proses tuning masih dilakukan
     if (!req.session.user) return res.status(401).send("Not logged in");
     const nim = req.session.user.nim;
     db.query(
