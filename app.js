@@ -34,7 +34,6 @@ var allowCrossDomain = function (req, res, next) {
 
 var authRouter = require("./routes/auth")(pool);
 var mainRouter = require("./routes/main")(pool);
-var datagetRouter = require("./routes/dataget")(pool);
 
 app.set("views", path.join(__dirname, "views")); // Set direktori views untuk EJS
 app.set("view engine", "ejs");
@@ -69,7 +68,6 @@ app.use(
 
 app.use("/", authRouter);
 app.use("/main", checkAuth, mainRouter);
-app.use("/info", datagetRouter);
 
 // Middleware untuk memeriksa apakah user sudah login
 function checkAuth(req, res, next) {
