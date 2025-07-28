@@ -435,9 +435,9 @@ controlModeSelect.addEventListener("change", function () {
     case "duaposisi":
       inputFieldsDiv.innerHTML = `
                 <div class="container-fluid mx-auto">
-                    <label for="set_point_atas" class="form-label">Set Point High</label>
+                    <label for="set_point_atas" class="form-label">Set Point High (°C)</label>
                     <input type="number" id="set_point_atas" placeholder="Enter TSPH value" class="form-control rounded-1" value="" step="0.1" required>
-                    <label for="set_point_bawah" class="form-label">Set Point Low</label>
+                    <label for="set_point_bawah" class="form-label">Set Point Low (°C)</label>
                     <input type="number" id="set_point_bawah" placeholder="Enter TSPL value" class="form-control rounded-1" value="" step="0.1" required>
                 </div>`;
       addTSPLTSPHValidation();
@@ -464,7 +464,7 @@ controlModeSelect.addEventListener("change", function () {
                         <datalist id="ki-history"></datalist>`
                         : ""
                     }
-                    <label for="sp" class="form-label">Set Point</label>
+                    <label for="sp" class="form-label">Set Point (°C)</label>
                     <input type="number" id="sp" placeholder="Enter set point value" class="form-control rounded-1" value="" step="0.1" list="sp-history" required>
                     <datalist id="sp-history"></datalist>
                 </div>`;
