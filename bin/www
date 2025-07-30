@@ -63,3 +63,17 @@ function onListening() {
   var bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
   debug("Listening on " + bind);
 }
+
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
+  process.exit(1);
+});
+process.on("unhandledRejection", (err) => {
+  console.error("Unhandled Rejection:", err);
+  process.exit(1);
+});
+process.on("SIGTERM", async () => {
+  console.log("SIGTERM diterima, menutup koneksi DB");
+  await pool.end(); // Pastikan pool DB tertutup
+  server.close(() => process.exit(0));
+});

@@ -56,7 +56,7 @@ app.use(
     }),
     secret: process.env.SECRETKEY,
     resave: false, // Jangan simpan session jika tidak ada perubahan
-    saveUninitialized: true, // Jangan simpan session yang belum diinisialisasi
+    saveUninitialized: false, // Jangan simpan session yang belum diinisialisasi
     cookie: {
       // secure: false, // false untuk developer/lokal | true untuk production/online (bisa tanpa ini jika sudah diatur di .env)
       secure: process.env.NODE_ENV === "production", // AKTIFKAN Cookie hanya dikirim di HTTPS jika dalam produksi
