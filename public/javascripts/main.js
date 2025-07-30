@@ -1,4 +1,3 @@
-// public/javascripts/main.js
 let sudahKonek = false;
 let socketAlertTimeout = null;
 let alertCounter = 0;
