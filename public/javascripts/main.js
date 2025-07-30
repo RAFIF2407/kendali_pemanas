@@ -17,7 +17,7 @@ let suhuTerakhir = null;
       return;
     }
     // Inisialisasi koneksi Socket.IO dengan NIM dari session
-    socket = io("https://pid-trainer.up.railway.app/", {
+    socket = io("https://pid-trainer-heather.up.railway.app/", {
       query: { nim: String(window.myNim).trim() },
     });
     setupSocketHandlers();
