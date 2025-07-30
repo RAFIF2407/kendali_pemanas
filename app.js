@@ -1,5 +1,3 @@
-// app.js
-// file ini adalah entry point untuk aplikasi Express yang menginisialisasi server HTTP dan Socket.IO
 require("dotenv").config();
 var pg = require("pg");
 var createError = require("http-errors");
