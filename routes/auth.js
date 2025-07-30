@@ -1,3 +1,5 @@
+// routes/auth.js
+// file ini menginisialisasi route untuk autentikasi pengguna, termasuk login dan logout
 var express = require("express");
 var router = express.Router();
 

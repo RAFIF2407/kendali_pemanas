@@ -1,3 +1,5 @@
+// routes/main.js
+// file ini menginisialisasi route utama untuk aplikasi, termasuk pengaturan session dan middleware
 var express = require("express");
 var router = express.Router();
 var mqttClientModule = require("../mqtt/client");

@@ -1,3 +1,5 @@
+// mqtt/client.js
+// file ini mengelola koneksi MQTT, menerima pesan, dan menyimpan data ke database
 var mqtt = require("async-mqtt");
 const { pool } = require("../helpers/util");
 

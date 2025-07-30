@@ -1,3 +1,5 @@
+//helpers/util.js
+// file ini berisi fungsi utilitas untuk mengelola koneksi database dan membungkus response
 const { Pool } = require("pg");
 require("dotenv").config(); // Memuat variabel dari file .env untuk konfigurasi database
 

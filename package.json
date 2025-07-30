@@ -1,3 +1,5 @@
+// package.json
+// file ini berisi informasi tentang proyek Node.js, termasuk dependensi, skrip, dan metadata lainnya untuk konfigurasi yang digunakan oleh npm untuk mengelola paket dan dependensi proyek
 {
   "name": "kendali_pemanas",
   "version": "0.0.0",

@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// file ini adalah entry point untuk aplikasi Express yang menginisialisasi server HTTP dan Socket.IO
 var app = require("../app");
 var debug = require("debug")("kendali_pemanas:server");
 var http = require("http");

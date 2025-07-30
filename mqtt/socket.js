@@ -1,3 +1,5 @@
+// mqtt/socket.js
+// file ini menginisialisasi Socket.IO untuk komunikasi real-time antara server dan frontend
 const { Server } = require("socket.io");
 // Inisialisasi variabel io, nimToSocketId, dan missedData untuk menyimpan data socket dan backlog
 let io;
