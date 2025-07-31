@@ -76,4 +76,5 @@ process.on("SIGTERM", async () => {
   console.log("SIGTERM diterima, menutup koneksi DB");
   await pool.end(); // Pastikan pool DB tertutup
   server.close(() => process.exit(0));
+  setTimeout(() => process.exit(1), 5000);
 });

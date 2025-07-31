@@ -46,7 +46,7 @@ function setupSocketHandlers() {
     // fungsi untuk menerima data suhu melalui Socket.IO
     let suhu = parseFloat(data.suhu);
     if (!isNaN(suhu)) {
-      suhu = suhu.toFixed(1);
+      suhu = suhu.toFixed(2);
       suhuTerakhir = parseFloat(suhu);
       const tempElem = document.getElementById("realtime-temperature");
       if (tempElem) tempElem.textContent = suhu + " °C";
